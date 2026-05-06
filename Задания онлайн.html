@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Самодисциплина · Дейлики и задания</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #e2d9c9;
+      font-family: 'Kalam', 'Segoe UI', cursive;
+      padding: 14px;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
+
+    .app {
+      max-width: 620px;
+      margin: 0 auto;
+      background: #fffdf5;
+      border-radius: 48px 32px 56px 32px;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    /* Стили логина */
+    .login-container {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .google-btn {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 50px;
+      padding: 14px 24px;
+      font-size: 1.2rem;
+      font-family: 'Kalam', cursive;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: 0.2s;
+      margin-top: 20px;
+    }
+    .google-btn:active { transform: scale(0.97); }
+    .code-input {
+      padding: 12px;
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 3px;
+      font-family: monospace;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      margin: 15px 0;
+      width: 100%;
+      max-width: 200px;
+    }
+    .role-select {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .role-btn {
+      background: #ffd166;
+      border: none;
+      border-radius: 40px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-family: 'Kalam', cursive;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .user-info {
+      background: #fff0d6;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .logout-btn, .leave-btn {
+      background: #e08e6a;
+      border: none;
+      border-radius: 30px;
+      padding: 6px 16px;
+      color: white;
+      cursor: pointer;
+      font-family: 'Kalam', cursive;
+    }
+    .family-code {
+      background: #fef2e1;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-family: monospace;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #b48742;
+    }
+    .tabs {
+      display: flex;
+      background: #faf2e2;
+      border-bottom: 2px solid #eedbad;
+      padding: 8px 16px 0;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      flex: 1;
+      font-family: 'Kalam', cursive;
+      font-size: 0.9rem;
+      font-weight: bold;
+      padding: 10px 0 8px;
+      background: none;
+      border: none;
+      color: #b28b54;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: 0.2s;
+    }
+    .tab-btn.active {
+      color: #4f3a1c;
+      border-bottom-color: #e3b26b;
+      background: linear-gradient(to top, #fff3e2, transparent);
+    }
+    .page { display: none; padding: 20px 16px 28px; }
+    .page.active-page { display: block; }
+    .add-task {
+      display: flex;
+      gap: 12px;
+      background: #fff6ea;
+      border-radius: 60px;
+      padding: 4px 8px;
+      margin-bottom: 24px;
+    }
+    .add-task input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 12px 12px;
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      outline: none;
+    }
+    .add-task button {
+      background: #f5e0bb;
+      border: none;
+      border-radius: 50px;
+      padding: 0 24px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #7b5a32;
+      cursor: pointer;
+    }
+    .task-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .task-item {
+      background: white;
+      border-radius: 28px;
+      padding: 12px 16px;
+      border: 1px solid #f3ebdb;
+    }
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .task-text {
+      flex: 1;
+      font-size: 1.1rem;
+      font-family: 'Kalam', cursive;
+    }
+    .task-status {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 30px;
+      background: #f0f0f0;
+    }
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .task-actions button {
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-family: 'Kalam', cursive;
+    }
+    .confirm-btn { background: #4caf50; color: white; }
+    .reject-btn { background: #f44336; color: white; }
+    .complete-btn { background: #ffd166; }
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: #b19260;
+    }
+    .empty-msg { text-align: center; color: #cdbc94; padding: 30px; }
+
+    /* Блок дейликов (компактный) */
+    .daily-global {
+      background: #fef5e8;
+      border-radius: 36px;
+      margin-bottom: 28px;
+      padding: 8px 12px 12px 16px;
+      border: 1px solid #f0e2ce;
+    }
+    .daily-global-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 4px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #7b623c;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      transition: background 0.2s;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .daily-global-header.green { background: #e8f5e9; }
+    .daily-progress-badge {
+      background: #e7dbbc;
+      border-radius: 40px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-family: monospace;
+    }
+    .daily-list {
+      list-style: none;
+      margin-top: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .daily-list.open { display: flex; }
+    .daily-subtask {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #f0e2ce;
+    }
+    .daily-subtask input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      accent-color: #7da06e;
+      cursor: pointer;
+    }
+    .daily-subtask span {
+      flex: 1;
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .daily-subtask .completed { text-decoration: line-through; color: #84a06b; }
+    .delete-daily-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #e08e6a;
+      padding: 0 8px;
+      border-radius: 20px;
+    }
+    .add-daily {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .add-daily input {
+      flex: 1;
+      font-family: 'Kalam', cursive;
+      background: #fffaf2;
+      border: 1px solid #eedcbb;
+      border-radius: 40px;
+      padding: 6px 12px;
+      outline: none;
+    }
+    .add-daily button {
+      background: #efdfbe;
+      border: none;
+      border-radius: 30px;
+      padding: 0 14px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .streak-inline {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: #fff0d6;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+    }
+    .streak-inline .streak-days { font-weight: bold; color: #e68a2e; font-size: 1rem; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="app">
+  <!-- Экран входа -->
+  <div id="loginScreen" class="login-container">
+    <h2>📋 Самодисциплина</h2>
+    <p style="margin: 15px 0;">Войдите через Google, чтобы продолжить</p>
+    <button id="googleLoginBtn" class="google-btn">
+      <span>📧</span> Войти через Google
+    </button>
+  </div>
+
+  <!-- Выбор роли после входа -->
+  <div id="roleScreen" style="display: none;" class="login-container">
+    <h2>👋 Привет, <span id="roleUserName"></span>!</h2>
+    <div class="role-select">
+      <button id="parentRoleBtn" class="role-btn">👑 Я наставник</button>
+      <button id="childRoleBtn" class="role-btn">🌱 Я ученик</button>
+    </div>
+  </div>
+
+  <!-- Создание комнаты (наставник) -->
+  <div id="createFamilyScreen" style="display: none;" class="login-container">
+    <h2>🔑 Код вашей комнаты</h2>
+    <div id="generatedCode" class="family-code" style="font-size: 2rem; margin: 20px;">---</div>
+    <button id="copyCodeBtn" class="role-btn">📋 Скопировать код</button>
+    <button id="startFamilyBtn" class="role-btn" style="margin-top: 20px;">🚀 Начать</button>
+  </div>
+
+  <!-- Присоединение к комнате (ученик) -->
+  <div id="joinFamilyScreen" style="display: none;" class="login-container">
+    <h2>🔐 Введите код комнаты</h2>
+    <input type="text" id="joinCodeInput" class="code-input" placeholder="ABC123" maxlength="6" style="text-transform: uppercase;">
+    <button id="joinFamilyBtn" class="role-btn">Присоединиться</button>
+  </div>
+
+  <!-- Основное приложение -->
+  <div id="appContainer" style="display: none;">
+    <div class="user-info">
+      <span id="userName"></span>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <span id="familyCodeDisplay" class="family-code"></span>
+        <button id="leaveFamilyBtn" class="leave-btn">🚪 Выйти из комнаты</button>
+        <button id="logoutMainBtn" class="logout-btn">Выйти из аккаунта</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tasks">📋 Задания</button>
+      <button class="tab-btn" data-tab="pending">⏳ На проверке</button>
+      <button class="tab-btn" data-tab="approved">✅ Выполненные</button>
+    </div>
+
+    <div id="tasksPage" class="page active-page">
+      <!-- Дейлики (компактный блок) -->
+      <div class="daily-global" id="dailyGlobal">
+        <div class="daily-global-header" id="dailyHeader">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="color: #3a86ff; font-weight: bold; font-size: 1.2rem;">!</span>
+            <span>Дейлики</span>
+            <div id="streakInline" class="streak-inline">
+              <span class="streak-icon">🔥</span>
+              <span class="streak-days" id="inlineStreakDays">0</span>
+              <span>подряд</span>
+            </div>
+          </div>
+          <span class="daily-progress-badge" id="dailyProgressBadge">0/0</span>
+        </div>
+        <ul class="daily-list" id="dailyList"></ul>
+        <div class="add-daily" id="addDailyContainer" style="display: none;">
+          <input type="text" id="newDailyInput" placeholder="новая подзадача...">
+          <button id="addDailyBtn">+</button>
+        </div>
+      </div>
+
+      <div class="add-task" id="addTaskPanel">
+        <input type="text" id="newTaskInput" placeholder="Новое задание...">
+        <button id="addTaskBtn">+</button>
+      </div>
+      <ul id="tasksList" class="task-list"></ul>
+    </div>
+
+    <div id="pendingPage" class="page">
+      <ul id="pendingList" class="task-list"></ul>
+    </div>
+
+    <div id="approvedPage" class="page">
+      <ul id="approvedList" class="task-list"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Firebase конфигурация (твои ключи)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHYG7vhz3PJkK5uEx_mI4j5ZBSXizbBtU",
+    authDomain: "assignments-ganets.firebaseapp.com",
+    projectId: "assignments-ganets",
+    storageBucket: "assignments-ganets.firebasestorage.app",
+    messagingSenderId: "468949754488",
+    appId: "1:468949754488:web:2b0613098f24026c41038d"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentUser = null;
+  let currentFamilyId = null;
+  let currentRole = null; // 'parent' или 'child'
+  let tasksUnsubscribe = null;
+  
+  // Дейлики и streak
+  let dailySubtasks = [];
+  let streakDays = 0;
+  let lastCompletedDate = null;
+  const DAILY_RESET_KEY = "daily_last_reset_date_v6";
+  const STREAK_KEY = "daily_streak_v5";
+  const DAILY_STORAGE_KEY = "hand_daily_local";
+
+  // Загрузка дейликов из localStorage
+  function loadDailyData() {
+    const stored = localStorage.getItem(DAILY_STORAGE_KEY);
+    if (stored) {
+      try {
+        dailySubtasks = JSON.parse(stored);
+      } catch(e) { dailySubtasks = []; }
+    }
+    if (dailySubtasks.length === 0) {
+      dailySubtasks = [];
+    }
+    loadStreak();
+    checkAndResetDaily();
+  }
+
+  function saveDailyData() {
+    localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(dailySubtasks));
+  }
+
+  function checkAndResetDaily() {
+    const today = new Date().toDateString();
+    const lastReset = localStorage.getItem(DAILY_RESET_KEY);
+    
+    if (lastReset !== today) {
+      if (dailySubtasks.length > 0) {
+        const wasAllCompleted = dailySubtasks.length > 0 && dailySubtasks.every(sub => sub.done === true);
+        for (let i = 0; i < dailySubtasks.length; i++) {
+          dailySubtasks[i].done = false;
+        }
+        saveDailyData();
+        if (!wasAllCompleted && lastReset) {
+          streakDays = 0;
+          lastCompletedDate = null;
+          saveStreak();
+        }
+      }
+      localStorage.setItem(DAILY_RESET_KEY, today);
+      renderDailyBlock();
+    }
+  }
+
+  function saveStreak() {
+    localStorage.setItem(STREAK_KEY, JSON.stringify({ streakDays, lastCompletedDate }));
+  }
+
+  function loadStreak() {
+    const saved = localStorage.getItem(STREAK_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        streakDays = data.streakDays || 0;
+        lastCompletedDate = data.lastCompletedDate;
+      } catch(e) { streakDays = 0; lastCompletedDate = null; }
+    }
+  }
+
+  function updateStreakDisplay() {
+    const inlineDays = document.getElementById("inlineStreakDays");
+    const inlineIcon = document.querySelector("#streakInline .streak-icon");
+    if (inlineDays) inlineDays.textContent = streakDays;
+    if (inlineIcon) inlineIcon.textContent = streakDays >= 7 ? "🏆" : "🔥";
+  }
+
+  function renderDailyBlock() {
+    const container = document.getElementById("dailyList");
+    const badge = document.getElementById("dailyProgressBadge");
+    const total = dailySubtasks.length;
+    const completed = dailySubtasks.filter(s => s.done).length;
+    badge.innerText = total ? `${completed}/${total}` : "0/0";
+    const headerDiv = document.getElementById("dailyHeader");
+    if (total > 0 && completed === total) headerDiv.classList.add("green");
+    else headerDiv.classList.remove("green");
+    updateStreakDisplay();
+
+    if (!container) return;
+    if (dailySubtasks.length === 0) {
+      container.innerHTML = '<div style="padding: 12px; text-align:center; color:#bcab84;">✨ Нет дейликов, добавьте</div>';
+    } else {
+      container.innerHTML = "";
+      dailySubtasks.forEach((sub, idx) => {
+        const li = document.createElement('li');
+        li.className = 'daily-subtask';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = sub.done;
+        cb.addEventListener('change', () => {
+          sub.done = !sub.done;
+          saveDailyData();
+          renderDailyBlock();
+          const allNow = dailySubtasks.every(s => s.done === true);
+          if (allNow) {
+            const today = new Date().toDateString();
+            if (!lastCompletedDate || new Date(lastCompletedDate).toDateString() !== today) {
+              if (lastCompletedDate) {
+                const lastDate = new Date(lastCompletedDate);
+                const todayDate = new Date();
+                const diff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+                if (diff === 1) streakDays++;
+                else if (diff > 1) streakDays = 1;
+              } else { streakDays = 1; }
+              lastCompletedDate = new Date().toISOString();
+              saveStreak();
+              updateStreakDisplay();
+            }
+          }
+        });
+        const span = document.createElement('span');
+        span.innerText = sub.text;
+        if (sub.done) span.classList.add('completed');
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = '✕';
+        delBtn.className = 'delete-daily-btn';
+        delBtn.onclick = () => {
+          dailySubtasks.splice(idx, 1);
+          saveDailyData();
+          renderDailyBlock();
+        };
+        li.appendChild(cb);
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        container.appendChild(li);
+      });
+    }
+  }
+
+  function addDailyTask(text) {
+    if (!text.trim()) return;
+    dailySubtasks.push({ id: Date.now(), text: text.trim(), done: false });
+    saveDailyData();
+    renderDailyBlock();
+    document.getElementById("newDailyInput").value = "";
+  }
+
+  // DOM элементы
+  const loginScreen = document.getElementById('loginScreen');
+  const roleScreen = document.getElementById('roleScreen');
+  const createFamilyScreen = document.getElementById('createFamilyScreen');
+  const joinFamilyScreen = document.getElementById('joinFamilyScreen');
+  const appContainer = document.getElementById('appContainer');
+  const userNameSpan = document.getElementById('userName');
+  const roleUserNameSpan = document.getElementById('roleUserName');
+  const familyCodeDisplay = document.getElementById('familyCodeDisplay');
+  const addTaskPanel = document.getElementById('addTaskPanel');
+
+  function generateRoomCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+    return code;
+  }
+
+  document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try { await auth.signInWithPopup(provider); } 
+    catch (error) { alert('Ошибка входа: ' + error.message); }
+  });
+
+  async function logout() { await auth.signOut(); }
+  document.getElementById('logoutMainBtn')?.addEventListener('click', logout);
+  document.getElementById('logoutBtn')?.addEventListener('click', logout);
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      loginScreen.style.display = 'block';
+      roleScreen.style.display = 'none';
+      createFamilyScreen.style.display = 'none';
+      joinFamilyScreen.style.display = 'none';
+      appContainer.style.display = 'none';
+      if (tasksUnsubscribe) tasksUnsubscribe();
+      currentFamilyId = null;
+      return;
+    }
+    currentUser = user;
+    loginScreen.style.display = 'none';
+    roleUserNameSpan.textContent = user.displayName || user.email;
+    roleScreen.style.display = 'block';
+    loadDailyData();
+  });
+
+  document.getElementById('parentRoleBtn').addEventListener('click', () => {
+    currentRole = 'parent';
+    const newCode = generateRoomCode();
+    document.getElementById('generatedCode').textContent = newCode;
+    roleScreen.style.display = 'none';
+    createFamilyScreen.style.display = 'block';
+    document.getElementById('copyCodeBtn').onclick = () => { navigator.clipboard.writeText(newCode); alert('Код скопирован!'); };
+    document.getElementById('startFamilyBtn').onclick = async () => {
+      await db.collection('families').doc(newCode).set({
+        code: newCode, parentEmail: currentUser.email, parentName: currentUser.displayName,
+        members: [currentUser.email], createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      currentFamilyId = newCode;
+      await loadFamilyData();
+    };
+  });
+
+  document.getElementById('childRoleBtn').addEventListener('click', () => {
+    currentRole = 'child';
+    roleScreen.style.display = 'none';
+    joinFamilyScreen.style.display = 'block';
+    document.getElementById('joinFamilyBtn').onclick = async () => {
+      const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+      if (!code) { alert('Введите код комнаты'); return; }
+      const familyDoc = await db.collection('families').doc(code).get();
+      if (!familyDoc.exists) { alert('Комната с таким кодом не найдена'); return; }
+      await db.collection('families').doc(code).update({ members: firebase.firestore.FieldValue.arrayUnion(currentUser.email) });
+      currentFamilyId = code;
+      await loadFamilyData();
+    };
+  });
+
+  async function loadFamilyData() {
+    if (!currentFamilyId) return;
+    const familyDoc = await db.collection('families').doc(currentFamilyId).get();
+    if (!familyDoc.exists) { alert('Ошибка: комната не найдена'); return; }
+    const familyData = familyDoc.data();
+    const isParent = (familyData.parentEmail === currentUser.email);
+    currentRole = isParent ? 'parent' : 'child';
+    addTaskPanel.style.display = isParent ? 'flex' : 'none';
+    familyCodeDisplay.textContent = currentFamilyId;
+    userNameSpan.textContent = `${currentUser.displayName || currentUser.email} (${isParent ? '👑 Наставник' : '🌱 Ученик'})`;
+    createFamilyScreen.style.display = 'none';
+    joinFamilyScreen.style.display = 'none';
+    roleScreen.style.display = 'none';
+    appContainer.style.display = 'block';
+    loadTasks();
+  }
+
+  function loadTasks() {
+    if (tasksUnsubscribe) tasksUnsubscribe();
+    tasksUnsubscribe = db.collection('tasks')
+      .where('familyId', '==', currentFamilyId)
+      .orderBy('createdAt', 'desc')
+      .onSnapshot((snapshot) => {
+        const tasks = [];
+        snapshot.forEach(doc => tasks.push({ id: doc.id, ...doc.data() }));
+        renderTasks(tasks);
+      });
+  }
+
+  function renderTasks(tasks) {
+    const activeTasks = tasks.filter(t => t.status === 'active');
+    const pendingTasks = tasks.filter(t => t.status === 'pending');
+    const approvedTasks = tasks.filter(t => t.status === 'approved');
+    renderTaskList('tasksList', activeTasks, 'active');
+    renderTaskList('pendingList', pendingTasks, 'pending');
+    renderTaskList('approvedList', approvedTasks, 'approved');
+  }
+
+  function renderTaskList(containerId, tasks, mode) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (tasks.length === 0) { container.innerHTML = '<li class="empty-msg">✨ Нет заданий</li>'; return; }
+    container.innerHTML = '';
+    tasks.forEach(task => {
+      const li = document.createElement('li'); li.className = 'task-item';
+      const createdDate = task.createdAt ? new Date(task.createdAt.toDate()).toLocaleDateString('ru-RU') : '';
+      li.innerHTML = `<div class="task-row"><span class="task-text">${escapeHtml(task.text)}</span><span class="task-status">${getStatusText(task.status)}</span></div>
+        <div class="task-meta">📅 ${createdDate}</div><div class="task-actions" id="actions-${task.id}"></div>`;
+      const actionsDiv = li.querySelector(`#actions-${task.id}`);
+      if (mode === 'active') {
+        if (currentRole === 'child') {
+          const btn = document.createElement('button'); btn.innerHTML = '✅ Сделано'; btn.className = 'complete-btn';
+          btn.onclick = () => markAsPending(task.id); actionsDiv.appendChild(btn);
+        } else if (currentRole === 'parent') {
+          const btn = document.createElement('button'); btn.innerHTML = '🗑 Удалить'; btn.style.background = '#f44336'; btn.style.color = 'white';
+          btn.onclick = () => deleteTask(task.id); actionsDiv.appendChild(btn);
+        }
+      } else if (mode === 'pending') {
+        if (currentRole === 'parent') {
+          const confirmBtn = document.createElement('button'); confirmBtn.innerHTML = '✅ Подтвердить'; confirmBtn.className = 'confirm-btn';
+          confirmBtn.onclick = () => approveTask(task.id); actionsDiv.appendChild(confirmBtn);
+          const rejectBtn = document.createElement('button'); rejectBtn.innerHTML = '❌ Отклонить'; rejectBtn.className = 'reject-btn';
+          rejectBtn.onclick = () => rejectTask(task.id); actionsDiv.appendChild(rejectBtn);
+        } else {
+          const span = document.createElement('span'); span.innerHTML = '⏳ Ожидает проверки наставника'; span.style.fontSize = '0.8rem'; span.style.color = '#ff9800';
+          actionsDiv.appendChild(span);
+        }
+      } else if (mode === 'approved') {
+        const date = task.completedAt ? new Date(task.completedAt.toDate()).toLocaleDateString('ru-RU') : '';
+        const span = document.createElement('span'); span.innerHTML = `✅ Выполнено ${date}`; span.style.fontSize = '0.8rem'; span.style.color = '#4caf50';
+        actionsDiv.appendChild(span);
+      }
+      container.appendChild(li);
+    });
+  }
+
+  function getStatusText(status) {
+    switch(status) {
+      case 'active': return '📌 Активно';
+      case 'pending': return '⏳ На проверке';
+      case 'approved': return '✅ Выполнено';
+      default: return '';
+    }
+  }
+
+  function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+  document.getElementById('addTaskBtn').addEventListener('click', async () => {
+    const input = document.getElementById('newTaskInput');
+    const text = input.value.trim();
+    if (!text || !currentFamilyId) return;
+    await db.collection('tasks').add({
+      text, status: 'active', familyId: currentFamilyId, createdBy: currentUser.uid,
+      createdByName: currentUser.displayName || currentUser.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(), completedAt: null
+    });
+    input.value = '';
+  });
+
+  async function markAsPending(taskId) {
+    await db.collection('tasks').doc(taskId).update({
+      status: 'pending', completedBy: currentUser.uid,
+      completedByName: currentUser.displayName || currentUser.email,
+      completedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+  async function approveTask(taskId) { await db.collection('tasks').doc(taskId).update({ status: 'approved', approvedBy: currentUser.uid, approvedAt: firebase.firestore.FieldValue.serverTimestamp() }); }
+  async function rejectTask(taskId) { await db.collection('tasks').doc(taskId).update({ status: 'active', completedAt: null }); }
+  async function deleteTask(taskId) { if (confirm('Удалить задание?')) await db.collection('tasks').doc(taskId).delete(); }
+
+  document.getElementById('leaveFamilyBtn')?.addEventListener('click', async () => {
+    if (confirm('Выйти из комнаты?')) {
+      if (tasksUnsubscribe) tasksUnsubscribe();
+      currentFamilyId = null;
+      appContainer.style.display = 'none';
+      roleScreen.style.display = 'block';
+    }
+  });
+
+  // Вкладки
+  const tabs = document.querySelectorAll('.tab-btn');
+  const pages = { tasks: document.getElementById('tasksPage'), pending: document.getElementById('pendingPage'), approved: document.getElementById('approvedPage') };
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.getAttribute('data-tab');
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(pages).forEach(page => page.classList.remove('active-page'));
+      if (pages[tabId]) pages[tabId].classList.add('active-page');
+    });
+  });
+
+  // Дейлики: добавление и подсказка
+  document.getElementById('addDailyBtn').addEventListener('click', () => { addDailyTask(document.getElementById('newDailyInput').value); });
+  document.getElementById('newDailyInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') addDailyTask(e.target.value); });
+  const dailyHeader = document.getElementById('dailyHeader');
+  const dailyList = document.getElementById('dailyList');
+  const addDailyContainer = document.getElementById('addDailyContainer');
+  dailyHeader.addEventListener('click', (e) => {
+    if (!e.target.closest('.daily-progress-badge')) {
+      alert('📌 Дейлики — ежедневные задания.\n\nОтмечай выполненные — они сбрасываются каждую ночь.\n🔥 Счётчик «подряд» растёт, если все дейлики выполнены до полуночи.');
+    }
+    const isOpen = dailyList.classList.toggle('open');
+    addDailyContainer.style.display = isOpen ? 'flex' : 'none';
+  });
+
+  loadDailyData();
+</script>
+</body>
+</html>
