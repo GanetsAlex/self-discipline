@@ -3,120 +3,592 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <title>Самодисциплина · Режим ребёнка</title>
+  <title>Рукописный ежедневник · Задачи + Дейлики</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { background: #e2d9c9; font-family: 'Kalam', 'Segoe UI', cursive; padding: 14px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #e2d9c9;
+      font-family: 'Kalam', 'Segoe UI', cursive;
+      padding: 14px;
+    }
+
     @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
-    .app { max-width: 620px; margin: 0 auto; background: #fffdf5; border-radius: 48px 32px 56px 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2); overflow: hidden; }
-    .login-container { padding: 40px 20px; text-align: center; }
-    .google-btn { background: #fff; border: 1px solid #ddd; border-radius: 50px; padding: 14px 24px; font-family: 'Kalam', cursive; cursor: pointer; display: inline-flex; gap: 12px; margin-top: 20px; }
-    .header-bar { background: #fff0d6; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .kid-mode-btn { background: #ffb74d; border: none; border-radius: 40px; padding: 6px 16px; font-family: 'Kalam', cursive; font-weight: bold; cursor: pointer; }
-    .logout-btn { background: #e08e6a; border: none; border-radius: 30px; padding: 6px 16px; color: white; cursor: pointer; }
-    .tabs { display: flex; background: #faf2e2; border-bottom: 2px solid #eedbad; padding: 8px 16px 0; gap: 12px; }
-    .tab-btn { flex: 1; font-family: 'Kalam', cursive; font-size: 1.3rem; font-weight: bold; padding: 12px 0 8px; background: none; border: none; color: #b28b54; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
-    .tab-btn.active { color: #4f3a1c; border-bottom-color: #e3b26b; background: linear-gradient(to top, #fff3e2, transparent); }
-    .page { display: none; padding: 20px 16px 28px; animation: fade 0.2s; }
+
+    .app {
+      max-width: 620px;
+      margin: 0 auto;
+      background: #fffdf5;
+      border-radius: 48px 32px 56px 32px;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    /* Стили для входа */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: #fffdf5;
+      border-radius: 48px;
+      padding: 40px 30px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+    }
+    .google-btn {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-family: 'Kalam', cursive;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .user-bar {
+      background: #fff0d6;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .logout-btn {
+      background: #e08e6a;
+      border: none;
+      border-radius: 30px;
+      padding: 6px 16px;
+      color: white;
+      cursor: pointer;
+      font-family: 'Kalam', cursive;
+    }
+    .tabs {
+      display: flex;
+      background: #faf2e2;
+      border-bottom: 2px solid #eedbad;
+      padding: 8px 16px 0;
+      gap: 12px;
+    }
+    .tab-btn {
+      flex: 1;
+      font-family: 'Kalam', cursive;
+      font-size: 1.3rem;
+      font-weight: bold;
+      padding: 12px 0 8px;
+      background: none;
+      border: none;
+      color: #b28b54;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: 0.2s;
+    }
+    .tab-btn.active {
+      color: #4f3a1c;
+      border-bottom-color: #e3b26b;
+      background: linear-gradient(to top, #fff3e2, transparent);
+    }
+
+    .page {
+      display: none;
+      padding: 20px 16px 28px;
+      animation: fade 0.2s;
+    }
     .page.active-page { display: block; }
     @keyframes fade { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: translateX(0); } }
-    .streak-inline { display: flex; align-items: center; gap: 4px; background: #fff0d6; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; }
-    .streak-inline .streak-days { font-weight: bold; color: #e68a2e; font-size: 1rem; }
-    .add-task { display: flex; gap: 12px; background: #fff6ea; border-radius: 60px; padding: 4px 8px; margin-bottom: 24px; box-shadow: inset 0 0 0 1px #fff0df, 0 2px 5px rgba(0,0,0,0.02); }
-    .add-task input { flex: 1; background: transparent; border: none; padding: 12px 12px; font-family: 'Kalam', cursive; font-size: 1.1rem; outline: none; }
-    .add-task button { background: #f5e0bb; border: none; border-radius: 50px; padding: 0 24px; font-size: 1.6rem; font-weight: bold; color: #7b5a32; cursor: pointer; }
-    .daily-global { background: #fef5e8; border-radius: 36px; margin-bottom: 28px; padding: 8px 12px 12px 16px; border: 1px solid #f0e2ce; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
-    .daily-global-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; cursor: pointer; font-weight: bold; color: #7b623c; font-size: 1.1rem; border-radius: 30px; transition: background 0.2s; flex-wrap: wrap; gap: 8px; }
-    .daily-global-header.green { background: #e8f5e9; }
-    .daily-progress-badge { background: #e7dbbc; border-radius: 40px; padding: 4px 12px; font-size: 0.75rem; font-family: monospace; }
-    .daily-list { list-style: none; margin-top: 8px; display: none; flex-direction: column; gap: 10px; }
+
+    /* Счётчик дней подряд (внутри дейликов) */
+    .streak-inline {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: #fff0d6;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+    }
+    .streak-inline .streak-icon {
+      font-size: 1rem;
+    }
+    .streak-inline .streak-days {
+      font-weight: bold;
+      color: #e68a2e;
+      font-size: 1rem;
+    }
+
+    /* Тултип для слова Дейлики */
+    .daily-label {
+      position: relative;
+      cursor: help;
+      border-bottom: 1px dotted #b48a4b;
+    }
+    .daily-label .tooltip-text {
+      visibility: hidden;
+      width: 160px;
+      background-color: #2c281ee6;
+      backdrop-filter: blur(6px);
+      color: #ffefcf;
+      text-align: center;
+      border-radius: 28px;
+      padding: 8px 12px;
+      position: absolute;
+      z-index: 1000;
+      bottom: 140%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      font-family: 'Kalam', monospace;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border: 1px solid #dbb776;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .daily-label:hover .tooltip-text,
+    .daily-label:active .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .add-task {
+      display: flex;
+      gap: 12px;
+      background: #fff6ea;
+      border-radius: 60px;
+      padding: 4px 8px;
+      margin-bottom: 24px;
+      box-shadow: inset 0 0 0 1px #fff0df, 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .add-task input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 12px 12px;
+      font-family: 'Kalam', cursive;
+      font-size: 1.1rem;
+      outline: none;
+    }
+    .add-task button {
+      background: #f5e0bb;
+      border: none;
+      border-radius: 50px;
+      padding: 0 24px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #7b5a32;
+      cursor: pointer;
+    }
+    .add-task button:active { transform: scale(0.96); }
+
+    .daily-global {
+      background: #fef5e8;
+      border-radius: 36px;
+      margin-bottom: 28px;
+      padding: 8px 12px 12px 16px;
+      border: 1px solid #f0e2ce;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .daily-global-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 4px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #7b623c;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      transition: background 0.2s;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .daily-global-header.green {
+      background: #e8f5e9;
+    }
+    .daily-progress-badge {
+      background: #e7dbbc;
+      border-radius: 40px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-family: monospace;
+    }
+    .daily-global-header.green .daily-progress-badge {
+      background: #cbe5be;
+      color: #3b6130;
+    }
+    .daily-list {
+      list-style: none;
+      margin-top: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
     .daily-list.open { display: flex; }
-    .daily-subtask { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px dashed #f0e2ce; }
-    .daily-subtask input { width: 22px; height: 22px; accent-color: #7da06e; cursor: pointer; }
-    .daily-subtask span { flex: 1; font-family: 'Kalam', cursive; font-size: 1rem; word-break: break-word; white-space: normal; }
-    .daily-subtask .completed { text-decoration: line-through; color: #84a06b; }
-    .delete-daily-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #e08e6a; padding: 0 8px; border-radius: 20px; }
-    .add-daily { display: flex; gap: 8px; margin-top: 12px; }
-    .add-daily input { flex: 1; font-family: 'Kalam', cursive; background: #fffaf2; border: 1px solid #eedcbb; border-radius: 40px; padding: 6px 12px; outline: none; }
-    .add-daily button { background: #efdfbe; border: none; border-radius: 30px; padding: 0 14px; cursor: pointer; font-size: 1.2rem; }
-    .task-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
-    .task-item { background: #ffffff; border-radius: 36px; padding: 12px 16px 12px 20px; box-shadow: 0 2px 8px #e8dfce; border: 1px solid #f3ebdb; transition: 0.2s; }
-    .task-main-row { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
-    .task-left { display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; }
-    .task-number { font-weight: 700; font-size: 1.35rem; color: #c9a05e; min-width: 40px; flex-shrink: 0; }
-    .task-text { flex: 1; font-size: 1.2rem; line-height: 1.45; font-family: 'Kalam', cursive; color: #3e3522; white-space: normal; word-break: break-word; overflow-wrap: break-word; }
-    .task-text.striked-red { position: relative; color: #8e7a5b; }
-    .task-text.striked-red::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(180deg, transparent 0px, transparent 12px, #e65c5c 12px, #e65c5c 15px, transparent 15px, transparent 28px); background-size: 100% 28px; pointer-events: none; }
-    .task-meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; margin-left: 52px; }
-    .calendar-badge { background: #fef2e1; border-radius: 30px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; font-size: 0.7rem; font-family: monospace; color: #b48a4b; cursor: pointer; position: relative; }
-    .tooltip-custom { position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%); background: #2c281ee6; backdrop-filter: blur(6px); color: #ffefcf; padding: 8px 14px; border-radius: 28px; font-size: 0.7rem; font-family: monospace; white-space: normal; min-width: 160px; text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.18s; z-index: 1000; }
-    .calendar-badge:hover .tooltip-custom, .calendar-badge:active .tooltip-custom { opacity: 1; }
-    .swipe-hint { font-size: 1.2rem; margin-left: 8px; color: #ddc79b; flex-shrink: 0; }
-    .task-item.completing { transform: translateX(110%); opacity: 0; transition: 0.35s cubic-bezier(0.2,0.9,0.4,1); pointer-events: none; }
-    .completed-group { background: #fcf7ed; border-radius: 32px; margin-bottom: 20px; padding: 8px 12px; }
-    .month-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; color: #b48742; border-left: 5px solid #e6bc7e; padding-left: 12px; margin-bottom: 0; }
-    .month-header .toggle-icon { font-size: 1rem; color: #c2a05e; }
-    .month-content { display: none; margin-top: 8px; }
+    .daily-subtask {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #f0e2ce;
+    }
+    .daily-subtask input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      accent-color: #7da06e;
+      cursor: pointer;
+    }
+    .daily-subtask span {
+      flex: 1;
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .daily-subtask .completed {
+      text-decoration: line-through;
+      color: #84a06b;
+    }
+    .delete-daily-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #e08e6a;
+      padding: 0 8px;
+      border-radius: 20px;
+      transition: 0.1s;
+    }
+    .delete-daily-btn:hover {
+      background: #f5e0bb;
+      transform: scale(1.05);
+    }
+    .add-daily {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .add-daily input {
+      flex: 1;
+      font-family: 'Kalam', cursive;
+      background: #fffaf2;
+      border: 1px solid #eedcbb;
+      border-radius: 40px;
+      padding: 6px 12px;
+      outline: none;
+    }
+    .add-daily button {
+      background: #efdfbe;
+      border: none;
+      border-radius: 30px;
+      padding: 0 14px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .task-item {
+      background: #ffffff;
+      border-radius: 36px;
+      padding: 12px 16px 12px 20px;
+      box-shadow: 0 2px 8px #e8dfce;
+      border: 1px solid #f3ebdb;
+      transition: 0.2s;
+    }
+    .task-main-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .task-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .task-number {
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: #c9a05e;
+      min-width: 40px;
+      flex-shrink: 0;
+    }
+    .task-text {
+      flex: 1;
+      font-size: 1.2rem;
+      line-height: 1.45;
+      font-family: 'Kalam', cursive;
+      color: #3e3522;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .task-text.striked-red {
+      position: relative;
+      color: #8e7a5b;
+    }
+    .task-text.striked-red::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        transparent 12px,
+        #e65c5c 12px,
+        #e65c5c 15px,
+        transparent 15px,
+        transparent 28px
+      );
+      background-size: 100% 28px;
+      pointer-events: none;
+    }
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+      margin-left: 52px;
+    }
+    .calendar-badge {
+      background: #fef2e1;
+      border-radius: 30px;
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      font-family: monospace;
+      color: #b48a4b;
+      cursor: pointer;
+      position: relative;
+    }
+    .tooltip-custom {
+      position: absolute;
+      bottom: 140%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c281ee6;
+      backdrop-filter: blur(6px);
+      color: #ffefcf;
+      padding: 8px 14px;
+      border-radius: 28px;
+      font-size: 0.7rem;
+      font-family: 'Kalam', monospace;
+      white-space: nowrap;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border: 1px solid #dbb776;
+      white-space: normal;
+      min-width: 160px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .calendar-badge:hover .tooltip-custom,
+    .calendar-badge:active .tooltip-custom {
+      opacity: 1;
+    }
+    .swipe-hint {
+      font-size: 1.2rem;
+      margin-left: 8px;
+      color: #ddc79b;
+      flex-shrink: 0;
+    }
+    .task-item.completing {
+      transform: translateX(110%);
+      opacity: 0;
+      transition: 0.35s cubic-bezier(0.2,0.9,0.4,1);
+      pointer-events: none;
+    }
+
+    .completed-group {
+      background: #fcf7ed;
+      border-radius: 32px;
+      margin-bottom: 20px;
+      padding: 8px 12px;
+    }
+    .month-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #b48742;
+      border-left: 5px solid #e6bc7e;
+      padding-left: 12px;
+      margin-bottom: 0;
+    }
+    .month-header .toggle-icon {
+      font-size: 1rem;
+      color: #c2a05e;
+    }
+    .month-content {
+      display: none;
+      margin-top: 8px;
+    }
     .month-content.open { display: block; }
-    .day-group { margin: 12px 0 12px 20px; }
-    .day-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: #9c824f; background: #fff7ec; border-radius: 30px; margin: 6px 0; }
-    .day-tasks { display: none; padding-left: 20px; }
+    .day-group {
+      margin: 12px 0 12px 20px;
+    }
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #9c824f;
+      background: #fff7ec;
+      border-radius: 30px;
+      margin: 6px 0;
+    }
+    .day-tasks {
+      display: none;
+      padding-left: 20px;
+    }
     .day-tasks.open { display: block; }
-    .completed-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 8px 8px 20px; font-family: 'Kalam', cursive; font-size: 1rem; border-left: 2px solid #dbbc87; margin: 6px 0; }
-    .completed-item .task-text-archive { flex: 1; text-decoration: line-through; color: #7b6e51; word-break: break-word; }
-    .revert-task-btn { background: none; border: none; font-size: 1rem; cursor: pointer; color: #b48b4a; padding: 4px 12px; border-radius: 30px; text-decoration: none !important; font-family: 'Kalam', cursive; font-weight: normal; flex-shrink: 0; display: inline-block; }
-    .revert-task-btn:hover { background: #efe3cf; }
-    .empty-msg { text-align: center; color: #cdbc94; padding: 30px; font-family: 'Kalam', cursive; }
-    .notification-badge { background: #ff9800; color: white; border-radius: 30px; padding: 4px 12px; font-size: 0.8rem; margin-left: 10px; }
+    
+    .completed-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 8px 8px 20px;
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      border-left: 2px solid #dbbc87;
+      margin: 6px 0;
+    }
+    .completed-item .task-text-archive {
+      flex: 1;
+      text-decoration: line-through;
+      color: #7b6e51;
+      word-break: break-word;
+    }
+    .revert-task-btn {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #b48b4a;
+      padding: 4px 12px;
+      border-radius: 30px;
+      text-decoration: none !important;
+      font-family: 'Kalam', cursive;
+      font-weight: normal;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+    .revert-task-btn:hover {
+      background: #efe3cf;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: #cdbc94;
+      padding: 30px;
+      font-family: 'Kalam', cursive;
+    }
   </style>
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<div class="app">
-  <div id="loginScreen" class="login-container">
+
+<!-- Экран входа -->
+<div id="loginOverlay" class="login-overlay" style="display: flex;">
+  <div class="login-card">
     <h2>📋 Самодисциплина</h2>
-    <button id="googleLoginBtn" class="google-btn">📧 Войти через Google</button>
-  </div>
-  <div id="appContainer" style="display: none;">
-    <div class="header-bar">
-      <span id="userNameSpan"></span>
-      <div>
-        <button id="kidModeBtn" class="kid-mode-btn">👶 Режим ребёнка</button>
-        <button id="logoutBtn" class="logout-btn">🚪 Выйти</button>
-      </div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="active">📋 Задачи</button>
-      <button class="tab-btn" data-tab="completed">📆 Архив</button>
-    </div>
-    <div id="activePage" class="page active-page">
-      <div class="add-task" id="addTaskPanel">
-        <input type="text" id="mainTaskInput" placeholder="Напишите задание..." autocomplete="off">
-        <button id="addMainBtn">+</button>
-      </div>
-      <div class="daily-global" id="dailyGlobal">
-        <div class="daily-global-header" id="dailyHeader">
-          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <span style="color:#3a86ff; font-weight:bold;">!</span>
-            <span>📌 Ежедневные рутины (дейлики)</span>
-            <div id="streakInline" class="streak-inline"><span class="streak-icon">🔥</span><span id="inlineStreakDays">0</span><span>подряд</span></div>
-          </div>
-          <span class="daily-progress-badge" id="dailyProgressBadge">0/0</span>
-        </div>
-        <ul class="daily-list" id="dailyList"></ul>
-        <div class="add-daily" id="addDailyContainer" style="display:none;">
-          <input id="newDailyInput" placeholder="новая подзадача...">
-          <button id="addDailyBtn">+</button>
-        </div>
-      </div>
-      <ul id="activeList" class="task-list"></ul>
-    </div>
-    <div id="completedPage" class="page"><div id="completedGroupsContainer"></div></div>
+    <p style="margin: 15px 0;">Войдите через Google, чтобы сохранять прогресс</p>
+    <button id="googleLoginBtn" class="google-btn">
+      📧 Войти через Google
+    </button>
   </div>
 </div>
+
+<div class="app" id="app" style="display: none;">
+  <div class="user-bar">
+    <span id="userEmail"></span>
+    <button id="logoutBtn" class="logout-btn">🚪 Выйти</button>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="active">📋 Задачи</button>
+    <button class="tab-btn" data-tab="completed">📆 Архив</button>
+  </div>
+
+  <div id="activePage" class="page active-page">
+    <div class="add-task">
+      <input type="text" id="mainTaskInput" placeholder="Напишите задание..." autocomplete="off">
+      <button id="addMainBtn">+</button>
+    </div>
+
+    <div class="daily-global" id="dailyGlobal">
+      <div class="daily-global-header" id="dailyHeader">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span style="color: #3a86ff; font-weight: bold; font-size: 1.3rem;">!</span>
+          <span class="daily-label">Дейлики<span class="tooltip-text">📌 Ежедневные задания</span></span>
+          <div id="streakInline" class="streak-inline">
+            <span class="streak-icon">🔥</span>
+            <span class="streak-days" id="inlineStreakDays">0</span>
+            <span>подряд</span>
+          </div>
+        </div>
+        <span class="daily-progress-badge" id="dailyProgressBadge">0/0</span>
+      </div>
+      <ul class="daily-list" id="dailyList"></ul>
+      <div class="add-daily" id="addDailyContainer" style="display: none;">
+        <input type="text" id="newDailyInput" placeholder="новая подзадача...">
+        <button id="addDailyBtn">+</button>
+      </div>
+    </div>
+
+    <ul id="activeList" class="task-list"></ul>
+  </div>
+
+  <div id="completedPage" class="page">
+    <div id="completedGroupsContainer"></div>
+  </div>
+</div>
+
 <script>
+  // ========== НАСТРОЙКИ FIREBASE ==========
   const firebaseConfig = {
     apiKey: "AIzaSyAHYG7vhz3PJkK5uEx_mI4j5ZBSXizbBtU",
     authDomain: "assignments-ganets.firebaseapp.com",
@@ -125,96 +597,585 @@
     messagingSenderId: "468949754488",
     appId: "1:468949754488:web:2b0613098f24026c41038d"
   };
+
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
 
   let currentUser = null;
-  let kidEmail = null;
-  let isKidMode = false;       // режим просмотра ребёнка (для родителя)
-  let isRealKid = false;       // если текущий пользователь — ребёнок (по email)
+  let currentData = {
+    mainTasks: [],
+    dailySubtasks: [],
+    streakDays: 0,
+    lastCompletedDate: null,
+    lastAchievementNotified: 0
+  };
 
-  // Мои данные (локальные)
-  let mainTasks = [], dailySubtasks = [], streakDays = 0, lastCompletedDate = null;
-  const STORAGE_KEY = "discipline_main";
-  const STREAK_KEY = "discipline_streak";
-  let lastAchievementNotified = 0;
+  // Достижения (твои оригинальные)
   const ACHIEVEMENTS = [
-    { days: 7, message: "🎉 7 дней подряд! Можешь порадовать себя любимой вкусняшкой 🍰", icon:"🌿" },
-    { days: 15, message: "🌟 15 дней подряд! Отличная дисциплина! 🎬", icon:"🌸" },
-    { days: 30, message: "🏆 30 дней подряд! Ты огонь! 🍽️", icon:"🏆" },
-    { days: 60, message: "💎 60 дней подряд! Вау! 📱", icon:"💎" },
-    { days: 180, message: "👑 Полгода подряд! Ты легенда! 🎁", icon:"👑" },
-    { days: 365, message: "🎊 ГОД подряд! Невероятно! 🎉🎂", icon:"🌟" }
+    { days: 7, icon: "🌿", badge: "🌿", message: "🎉 7 дней подряд! Ты молодец! Можешь порадовать себя любимой вкусняшкой 🍰" },
+    { days: 15, icon: "🌸", badge: "🌸", message: "🌟 15 дней подряд! Отличная дисциплина! Купи себе новую книгу или сходи в кино 🎬" },
+    { days: 30, icon: "🏆", badge: "🏆", message: "🏆 30 дней подряд! Ты огонь! Заслужил ужин в любимом ресторане 🍽️" },
+    { days: 60, icon: "💎", badge: "💎", message: "💎 60 дней подряд! Вау! Побалуй себя новым гаджетом или крутой вещью 📱" },
+    { days: 180, icon: "👑", badge: "👑", message: "👑 Полгода подряд! Ты легенда! Порадуй себя чем-то особенным — ты это заслужил! 🎁" },
+    { days: 365, icon: "🌟", badge: "🌟", message: "🎊 ГОД подряд! Невероятно! Ты абсолютный чемпион! Устрой настоящий праздник! 🎉🎂" }
   ];
+  
+  let lastAchievementNotified = 0;
 
-  // Данные ребёнка (из Firestore)
-  let kidTasks = [], kidDaily = [], kidStreak = 0;
-
-  function saveMyData() { localStorage.setItem(STORAGE_KEY, JSON.stringify({mainTasks,dailySubtasks})); }
-  function loadMyData() { let s=localStorage.getItem(STORAGE_KEY); if(s){let d=JSON.parse(s); mainTasks=d.mainTasks||[]; dailySubtasks=d.dailySubtasks||[];} else {mainTasks=[]; dailySubtasks=[];} loadStreak(); checkAndResetDaily(); renderEverything(); }
-
-  function saveStreak(){ localStorage.setItem(STREAK_KEY, JSON.stringify({streakDays,lastCompletedDate,lastAchievementNotified})); }
-  function loadStreak(){ let s=localStorage.getItem(STREAK_KEY); if(s){ let d=JSON.parse(s); streakDays=d.streakDays||0; lastCompletedDate=d.lastCompletedDate; lastAchievementNotified=d.lastAchievementNotified||0; } updateStreakDisplay(); }
-  function updateStreakDisplay(){ let daysSpan=document.getElementById('inlineStreakDays'); if(daysSpan) daysSpan.textContent=streakDays; let iconSpan=document.querySelector('#streakInline .streak-icon'); let icon='🔥'; for(let a of ACHIEVEMENTS) if(streakDays>=a.days) icon=a.icon; if(iconSpan) iconSpan.textContent=icon; for(let a of ACHIEVEMENTS) if(streakDays>=a.days && lastAchievementNotified<a.days){ showNotification(a.message); lastAchievementNotified=a.days; saveStreak(); } }
-  function checkAndResetDaily(){ let today=new Date().toDateString(); let last=localStorage.getItem("daily_last_reset"); if(last!==today){ let wasAll=dailySubtasks.length>0 && dailySubtasks.every(d=>d.done); for(let d of dailySubtasks) d.done=false; saveMyData(); if(!wasAll && last){ streakDays=0; lastCompletedDate=null; saveStreak(); updateStreakDisplay(); } localStorage.setItem("daily_last_reset",today); renderDaily(); } }
-  function checkStreakAfterDaily(){ let all=dailySubtasks.every(d=>d.done); if(all){ let today=new Date().toDateString(); if(!lastCompletedDate || new Date(lastCompletedDate).toDateString()!==today){ if(lastCompletedDate){ let diff=Math.floor((new Date()-new Date(lastCompletedDate))/(24*3600000)); if(diff===1) streakDays++; else if(diff>1) streakDays=1; } else streakDays=1; lastCompletedDate=new Date().toISOString(); saveStreak(); updateStreakDisplay(); } } }
-  function addMyTask(t){ if(!t.trim()) return; mainTasks.push({id:Date.now(), text:t.trim(), createdAt:new Date().toISOString(), status:"active"}); saveMyData(); renderTasks(); }
-  async function completeTask(id,el, isChildTask=false, childTaskId=null){ if(!isRealKid && !isKidMode) { let task=mainTasks.find(t=>t.id==id); if(task && task.status!=="completed"){ let span=el.querySelector('.task-text'); span.classList.add('striked-red'); el.classList.add('completing'); await new Promise(r=>setTimeout(r,270)); task.status="completed"; task.completedAt=new Date().toISOString(); saveMyData(); renderTasks(); } } else { if(isRealKid && !isKidMode){ // ребёнок отмечает задание — отправляем запрос родителю
-      await db.collection('pendingTasks').add({ taskId:id, text: kidTasks.find(t=>t.id==id)?.text || '', fromKid: currentUser.email, toMentor: kidEmail, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-      await db.collection('kidTasks').doc(id).update({ status:'pending' });
-      renderKidData();
-      showNotification('Задание отправлено на проверку');
-    } }
+  // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+  function formatDateTip(isoString) {
+    if (!isoString) return "—";
+    const d = new Date(isoString);
+    return d.toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
   }
-  function revertTask(id){ let t=mainTasks.find(t=>t.id==id); if(t && t.status==="completed"){ t.status="active"; t.completedAt=null; saveMyData(); renderTasks(); } }
 
-  function renderTasks(){ let cont=document.getElementById('activeList'); let active=mainTasks.filter(t=>t.status==='active'); if(active.length===0){ cont.innerHTML='<li class="empty-msg">✨ Нет активных задач, добавьте сверху</li>'; return; } cont.innerHTML=''; active.forEach((t,idx)=>{ let li=document.createElement('li'); li.className='task-item'; li.innerHTML=`<div class="task-main-row"><div class="task-left"><span class="task-number">${idx+1}.</span><span class="task-text">${escapeHtml(t.text)}</span></div><span class="swipe-hint">↜</span></div><div class="task-meta"><span class="calendar-badge">📅<div class="tooltip-custom">➕ Добавлено: ${new Date(t.createdAt).toLocaleString()}<br>⏳ Активно</div></span><span>${new Date(t.createdAt).toLocaleDateString()}</span></div>`; attachSwipe(li,t.id); cont.appendChild(li); }); }
-  function renderDaily(){ let cont=document.getElementById('dailyList'); let badge=document.getElementById('dailyProgressBadge'); let completed=dailySubtasks.filter(d=>d.done).length; badge.innerText=`${completed}/${dailySubtasks.length}`; if(dailySubtasks.length===0){ cont.innerHTML='<div style="padding:12px;text-align:center;">✨ Нет дейликов</div>'; return; } cont.innerHTML=''; dailySubtasks.forEach((d,idx)=>{ let li=document.createElement('li'); li.className='daily-subtask'; let cb=document.createElement('input');cb.type='checkbox';cb.checked=d.done; cb.onchange=()=>{ if(!isRealKid){ d.done=!d.done; saveMyData(); renderDaily(); checkStreakAfterDaily(); } else { // ребёнок отметил дейлик — запрос родителю
-          db.collection('pendingDaily').add({ text:d.text, fromKid:currentUser.email, toMentor:kidEmail, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-          showNotification('Дейлик отправлен на проверку');
-        } }; let span=document.createElement('span');span.innerText=d.text; if(d.done)span.classList.add('completed'); let del=document.createElement('button');del.innerHTML='✕';del.className='delete-daily-btn'; del.onclick=()=>{ if(!isRealKid){ dailySubtasks.splice(idx,1); saveMyData(); renderDaily(); } }; li.appendChild(cb);li.appendChild(span); if(!isRealKid) li.appendChild(del); cont.appendChild(li); }); }
-  function addMyDaily(t){ if(!t.trim()) return; dailySubtasks.push({id:Date.now(), text:t.trim(), done:false}); saveMyData(); renderDaily(); document.getElementById('newDailyInput').value=''; }
-  function renderArchive(){ let cont=document.getElementById('completedGroupsContainer'); let completed=mainTasks.filter(t=>t.status==='completed'); if(completed.length===0){ cont.innerHTML='<div class="empty-msg">📭 Нет завершённых заданий</div>'; return; } let groups=new Map(); for(let t of completed){ let d=new Date(t.completedAt); let key=d.toISOString().slice(0,7); if(!groups.has(key)) groups.set(key,{name:d.toLocaleString('ru-RU',{month:'long',year:'numeric'}), days:new Map()}); let day=d.toISOString().slice(0,10); if(!groups.get(key).days.has(day)) groups.get(key).days.set(day,{title:d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'}), tasks:[]}); groups.get(key).days.get(day).tasks.push(t); } let sorted=Array.from(groups.entries()).sort((a,b)=>b[0].localeCompare(a[0])); cont.innerHTML=''; for(let [_,{name,days}] of sorted){ let monthDiv=document.createElement('div');monthDiv.className='completed-group'; let monthHead=document.createElement('div');monthHead.className='month-header';monthHead.innerHTML=`<span>📅 ${name}</span><span class="toggle-icon">▼</span>`; let monthCont=document.createElement('div');monthCont.className='month-content open'; monthHead.onclick=()=>{monthCont.classList.toggle('open'); monthHead.querySelector('.toggle-icon').innerText=monthCont.classList.contains('open')?'▼':'▶';}; let sortedDays=Array.from(days.entries()).sort((a,b)=>b[0].localeCompare(a[0])); for(let [_,{title,tasks}] of sortedDays){ let dayDiv=document.createElement('div');dayDiv.className='day-group'; let dayHead=document.createElement('div');dayHead.className='day-header';dayHead.innerHTML=`<span>✨ ${title}</span><span class="toggle-icon">▼</span>`; let dayCont=document.createElement('div');dayCont.className='day-tasks open'; dayHead.onclick=()=>{dayCont.classList.toggle('open'); dayHead.querySelector('.toggle-icon').innerText=dayCont.classList.contains('open')?'▼':'▶';}; for(let task of tasks){ let td=document.createElement('div');td.className='completed-item'; td.innerHTML=`<span class="task-text-archive">✘ ${task.text}</span><button class="revert-task-btn" data-id="${task.id}">↺ вернуть</button>`; dayCont.appendChild(td); } dayDiv.appendChild(dayHead);dayDiv.appendChild(dayCont); monthCont.appendChild(dayDiv); } monthDiv.appendChild(monthHead);monthDiv.appendChild(monthCont); cont.appendChild(monthDiv); } document.querySelectorAll('.revert-task-btn').forEach(btn=>btn.onclick=()=>revertTask(parseInt(btn.dataset.id))); }
-  function attachSwipe(el,id){ let startX=0; el.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;}); el.addEventListener('touchend',e=>{ let delta=e.changedTouches[0].clientX-startX; if(Math.abs(delta)>55) completeTask(id,el); }); }
-  function showNotification(msg){ let d=document.createElement('div'); d.textContent=msg; d.style.cssText='position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#4caf50; color:white; padding:12px 20px; border-radius:50px; z-index:2000; font-family:Kalam;'; document.body.appendChild(d); setTimeout(()=>d.remove(),4000); }
-  function escapeHtml(s){ let div=document.createElement('div'); div.textContent=s; return div.innerHTML; }
-  function renderEverything(){ renderTasks(); renderDaily(); renderArchive(); }
-
-  // ========== FIRESTORE ДЛЯ РЕБЁНКА ==========
-  async function loadKidDataFromFirestore(){
-    if(!kidEmail) return;
-    db.collection('kidTasks').where('kidEmail','==',kidEmail).onSnapshot(s=>{ kidTasks=s.docs.map(d=>({id:d.id,...d.data()})); if(isKidMode) renderKidTasksForMentor(); });
-    db.collection('kidDaily').doc(kidEmail).onSnapshot(d=>{ if(d.exists) kidDaily=d.data().items||[]; else kidDaily=[]; if(isKidMode) renderKidDailyForMentor(); });
-    db.collection('pendingTasks').where('toMentor','==',currentUser?.email).onSnapshot(s=>{ let pend=s.docs.map(d=>({id:d.id,...d.data()})); if(pend.length>0 && !isKidMode && !isRealKid) document.getElementById('kidModeBtn').innerHTML=`👶 Режим ребёнка 🔴`; else document.getElementById('kidModeBtn').innerHTML=`👶 Режим ребёнка`; });
+  function showNotification(message, type = "success") {
+    const notification = document.createElement("div");
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4caf50;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      z-index: 2000;
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      text-align: center;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: fadeInUp 0.3s ease;
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 4000);
   }
-  function renderKidTasksForMentor(){ let cont=document.getElementById('activeList'); if(!isKidMode) return; let active=kidTasks.filter(t=>t.status==='active'); if(active.length===0){ cont.innerHTML='<li class="empty-msg">✨ У ребёнка нет заданий</li>'; return; } cont.innerHTML=''; active.forEach((t,idx)=>{ let li=document.createElement('li');li.className='task-item'; li.innerHTML=`<div class="task-main-row"><div class="task-left"><span class="task-number">${idx+1}.</span><span class="task-text">${escapeHtml(t.text)}</span></div></div><div class="task-meta">📅 ${t.createdAt?new Date(t.createdAt.toDate()).toLocaleDateString():''}</div>`; cont.appendChild(li); }); }
-  function renderKidDailyForMentor(){ let cont=document.getElementById('dailyList'); let badge=document.getElementById('dailyProgressBadge'); let completed=kidDaily.filter(d=>d.done).length; badge.innerText=`${completed}/${kidDaily.length}`; if(kidDaily.length===0){ cont.innerHTML='<div style="padding:12px;text-align:center;">✨ У ребёнка нет дейликов</div>'; return; } cont.innerHTML=''; kidDaily.forEach(d=>{ let li=document.createElement('li');li.className='daily-subtask'; let cb=document.createElement('input');cb.type='checkbox';cb.checked=d.done; cb.disabled=true; let span=document.createElement('span');span.innerText=d.text; if(d.done)span.classList.add('completed'); li.appendChild(cb);li.appendChild(span); cont.appendChild(li); }); }
-  function addKidTaskByMentor(text){ if(!text.trim() || !kidEmail) return; db.collection('kidTasks').add({ text:text.trim(), status:'active', kidEmail, createdAt:firebase.firestore.FieldValue.serverTimestamp() }); }
-  async function confirmPendingTask(pendingId){ await db.collection('kidTasks').doc(pendingId).update({ status:'approved' }); await db.collection('pendingTasks').doc(pendingId).delete(); }
-  async function rejectPendingTask(pendingId){ await db.collection('kidTasks').doc(pendingId).update({ status:'active' }); await db.collection('pendingTasks').doc(pendingId).delete(); }
+
+  function updateStreakDisplay() {
+    const inlineDays = document.getElementById("inlineStreakDays");
+    const inlineIcon = document.querySelector("#streakInline .streak-icon");
+    
+    if (inlineDays) inlineDays.textContent = currentData.streakDays;
+    
+    let currentIcon = "🔥";
+    for (let i = ACHIEVEMENTS.length - 1; i >= 0; i--) {
+      if (currentData.streakDays >= ACHIEVEMENTS[i].days) {
+        currentIcon = ACHIEVEMENTS[i].icon;
+        break;
+      }
+    }
+    if (inlineIcon) inlineIcon.textContent = currentIcon;
+    
+    for (let ach of ACHIEVEMENTS) {
+      if (currentData.streakDays >= ach.days && currentData.lastAchievementNotified < ach.days) {
+        showNotification(ach.message, "success");
+        currentData.lastAchievementNotified = ach.days;
+        saveToFirestore();
+      }
+    }
+  }
+
+  // ========== СОХРАНЕНИЕ В FIRESTORE ==========
+  async function saveToFirestore() {
+    if (!currentUser) return;
+    await db.collection('users').doc(currentUser.uid).set({
+      email: currentUser.email,
+      mainTasks: currentData.mainTasks,
+      dailySubtasks: currentData.dailySubtasks,
+      streakDays: currentData.streakDays,
+      lastCompletedDate: currentData.lastCompletedDate,
+      lastAchievementNotified: currentData.lastAchievementNotified,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  }
+
+  async function loadFromFirestore() {
+    if (!currentUser) return;
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    if (doc.exists) {
+      const data = doc.data();
+      currentData.mainTasks = data.mainTasks || [];
+      currentData.dailySubtasks = data.dailySubtasks || [];
+      currentData.streakDays = data.streakDays || 0;
+      currentData.lastCompletedDate = data.lastCompletedDate || null;
+      currentData.lastAchievementNotified = data.lastAchievementNotified || 0;
+    } else {
+      currentData = {
+        mainTasks: [],
+        dailySubtasks: [],
+        streakDays: 0,
+        lastCompletedDate: null,
+        lastAchievementNotified: 0
+      };
+    }
+    checkAndResetDaily();
+    renderAll();
+    updateStreakDisplay();
+  }
+
+  // ========== ЛОГИКА ДЕЙЛИКОВ ==========
+  function checkAndResetDaily() {
+    const today = new Date().toDateString();
+    const lastReset = localStorage.getItem("daily_last_reset_date_v6_" + (currentUser?.uid || "temp"));
+    
+    if (lastReset !== today) {
+      if (currentData.dailySubtasks.length > 0) {
+        const wasAllCompleted = currentData.dailySubtasks.length > 0 && currentData.dailySubtasks.every(sub => sub.done === true);
+        for (let i = 0; i < currentData.dailySubtasks.length; i++) {
+          currentData.dailySubtasks[i].done = false;
+        }
+        if (!wasAllCompleted && lastReset) {
+          currentData.streakDays = 0;
+          currentData.lastCompletedDate = null;
+        } else if (wasAllCompleted) {
+          const newDate = new Date().toISOString();
+          if (!currentData.lastCompletedDate || new Date(currentData.lastCompletedDate).toDateString() !== today) {
+            if (currentData.lastCompletedDate) {
+              const diff = Math.floor((new Date() - new Date(currentData.lastCompletedDate)) / (1000 * 60 * 60 * 24));
+              if (diff === 1) currentData.streakDays++;
+              else if (diff > 1) currentData.streakDays = 1;
+            } else {
+              currentData.streakDays = 1;
+            }
+            currentData.lastCompletedDate = newDate;
+          }
+        }
+        saveToFirestore();
+        updateStreakDisplay();
+      }
+      localStorage.setItem("daily_last_reset_date_v6_" + (currentUser?.uid || "temp"), today);
+    }
+  }
+
+  // ========== ЗАДАЧИ ==========
+  function addMainTask(text) {
+    if (!text.trim()) return;
+    currentData.mainTasks.push({
+      id: Date.now(),
+      text: text.trim(),
+      createdAt: new Date().toISOString(),
+      completedAt: null,
+      status: "active"
+    });
+    saveToFirestore();
+    renderActive();
+  }
+
+  async function completeMainTask(taskId, element) {
+    const task = currentData.mainTasks.find(t => t.id == taskId);
+    if (!task || task.status === "completed") return;
+    const textSpan = element.querySelector('.task-text');
+    if (textSpan) {
+      textSpan.classList.add('striked-red');
+      await new Promise(r => setTimeout(r, 170));
+    }
+    element.classList.add('completing');
+    await new Promise(r => setTimeout(r, 270));
+    task.status = "completed";
+    task.completedAt = new Date().toISOString();
+    saveToFirestore();
+    renderActive();
+    renderCompletedArchive();
+  }
+
+  function revertMainTask(taskId) {
+    const task = currentData.mainTasks.find(t => t.id == taskId);
+    if (task && task.status === "completed") {
+      task.status = "active";
+      task.completedAt = null;
+      saveToFirestore();
+      renderActive();
+      renderCompletedArchive();
+    }
+  }
+
+  // ========== ДЕЙЛИКИ ==========
+  function addDailyTask(text) {
+    if (!text.trim()) return;
+    currentData.dailySubtasks.push({
+      id: Date.now(),
+      text: text.trim(),
+      done: false
+    });
+    saveToFirestore();
+    renderDailyBlock();
+  }
+
+  function deleteDailyTask(dailyId) {
+    currentData.dailySubtasks = currentData.dailySubtasks.filter(sub => sub.id !== dailyId);
+    saveToFirestore();
+    renderDailyBlock();
+    renderActive();
+  }
+
+  // ========== ОТРИСОВКА ==========
+  function renderActive() {
+    const container = document.getElementById("activeList");
+    const activeTasks = currentData.mainTasks.filter(t => t.status === "active");
+    if (activeTasks.length === 0) {
+      container.innerHTML = '<li class="empty-msg">✨ Нет активных задач, добавьте сверху</li>';
+      return;
+    }
+    container.innerHTML = "";
+    activeTasks.forEach((task, idx) => {
+      const li = document.createElement('li');
+      li.className = 'task-item';
+      
+      const mainRow = document.createElement('div');
+      mainRow.className = 'task-main-row';
+      
+      const leftDiv = document.createElement('div');
+      leftDiv.className = 'task-left';
+      
+      const numSpan = document.createElement('span');
+      numSpan.className = 'task-number';
+      numSpan.innerText = (idx + 1) + '.';
+      
+      const textSpan = document.createElement('span');
+      textSpan.className = 'task-text';
+      textSpan.innerText = task.text;
+      
+      const swipeHint = document.createElement('span');
+      swipeHint.className = 'swipe-hint';
+      swipeHint.innerText = '↜';
+      
+      leftDiv.appendChild(numSpan);
+      leftDiv.appendChild(textSpan);
+      mainRow.appendChild(leftDiv);
+      mainRow.appendChild(swipeHint);
+      
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'task-meta';
+      
+      const calendarSpan = document.createElement('span');
+      calendarSpan.className = 'calendar-badge';
+      calendarSpan.innerHTML = '📅';
+      const tooltipDiv = document.createElement('div');
+      tooltipDiv.className = 'tooltip-custom';
+      const createdStr = formatDateTip(task.createdAt);
+      tooltipDiv.innerHTML = `➕ Добавлено: ${createdStr}<br>⏳ Активно`;
+      calendarSpan.appendChild(tooltipDiv);
+      
+      const dateShortSpan = document.createElement('span');
+      dateShortSpan.style.fontSize = '0.7rem';
+      dateShortSpan.style.fontFamily = 'monospace';
+      dateShortSpan.style.color = '#b19260';
+      const shortDate = new Date(task.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+      dateShortSpan.innerText = shortDate;
+      
+      metaDiv.appendChild(calendarSpan);
+      metaDiv.appendChild(dateShortSpan);
+      
+      li.appendChild(mainRow);
+      li.appendChild(metaDiv);
+      
+      attachSwipe(li, task.id);
+      container.appendChild(li);
+    });
+  }
+
+  function renderDailyBlock() {
+    const container = document.getElementById("dailyList");
+    const badge = document.getElementById("dailyProgressBadge");
+    const total = currentData.dailySubtasks.length;
+    const completed = currentData.dailySubtasks.filter(s => s.done).length;
+    badge.innerText = total ? `${completed}/${total}` : "0/0";
+    const headerDiv = document.getElementById("dailyHeader");
+    if (total > 0 && completed === total) {
+      headerDiv.classList.add("green");
+    } else {
+      headerDiv.classList.remove("green");
+    }
+
+    if (!container) return;
+    if (currentData.dailySubtasks.length === 0) {
+      container.innerHTML = '<div style="padding: 12px; text-align:center; color:#bcab84;">✨ Нет ежедневных задач, добавьте</div>';
+    } else {
+      container.innerHTML = "";
+      currentData.dailySubtasks.forEach((sub) => {
+        const li = document.createElement('li');
+        li.className = 'daily-subtask';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = sub.done;
+        cb.addEventListener('change', () => {
+          sub.done = !sub.done;
+          saveToFirestore();
+          renderDailyBlock();
+          renderActive();
+          const allNow = currentData.dailySubtasks.every(s => s.done === true);
+          if (allNow) {
+            const today = new Date().toDateString();
+            if (!currentData.lastCompletedDate || new Date(currentData.lastCompletedDate).toDateString() !== today) {
+              if (currentData.lastCompletedDate) {
+                const lastDate = new Date(currentData.lastCompletedDate);
+                const todayDate = new Date();
+                const diff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+                if (diff === 1) currentData.streakDays++;
+                else if (diff > 1) currentData.streakDays = 1;
+              } else {
+                currentData.streakDays = 1;
+              }
+              currentData.lastCompletedDate = new Date().toISOString();
+              saveToFirestore();
+              updateStreakDisplay();
+            }
+          }
+        });
+        const span = document.createElement('span');
+        span.innerText = sub.text;
+        if (sub.done) span.classList.add('completed');
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = '✕';
+        delBtn.className = 'delete-daily-btn';
+        delBtn.addEventListener('click', () => deleteDailyTask(sub.id));
+        li.appendChild(cb);
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        container.appendChild(li);
+      });
+    }
+  }
+
+  function renderCompletedArchive() {
+    const container = document.getElementById("completedGroupsContainer");
+    if (!container) return;
+    const completed = currentData.mainTasks.filter(t => t.status === "completed");
+    if (completed.length === 0) {
+      container.innerHTML = '<div class="empty-msg">📭 Нет завершённых заданий</div>';
+      return;
+    }
+    const groups = new Map();
+    for (let task of completed) {
+      const date = new Date(task.completedAt);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const monthKey = `${year}-${month}`;
+      const monthName = date.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
+      const dayKey = date.toISOString().slice(0,10);
+      const dayTitle = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+      if (!groups.has(monthKey)) {
+        groups.set(monthKey, { monthName, days: new Map() });
+      }
+      const monthGroup = groups.get(monthKey);
+      if (!monthGroup.days.has(dayKey)) {
+        monthGroup.days.set(dayKey, { dayTitle, tasks: [] });
+      }
+      monthGroup.days.get(dayKey).tasks.push(task);
+    }
+    const sortedMonths = Array.from(groups.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+    container.innerHTML = "";
+    for (let [monthKey, { monthName, days }] of sortedMonths) {
+      const monthDiv = document.createElement('div');
+      monthDiv.className = 'completed-group';
+      const monthHeader = document.createElement('div');
+      monthHeader.className = 'month-header';
+      monthHeader.innerHTML = `<span>📅 ${monthName}</span><span class="toggle-icon">▼</span>`;
+      const monthContent = document.createElement('div');
+      monthContent.className = 'month-content open';
+      monthHeader.addEventListener('click', () => {
+        monthContent.classList.toggle('open');
+        monthHeader.querySelector('.toggle-icon').innerText = monthContent.classList.contains('open') ? '▼' : '▶';
+      });
+      const sortedDays = Array.from(days.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+      for (let [dayKey, { dayTitle, tasks }] of sortedDays) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day-group';
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'day-header';
+        dayHeader.innerHTML = `<span>✨ ${dayTitle}</span><span class="toggle-icon">▼</span>`;
+        const dayTasksDiv = document.createElement('div');
+        dayTasksDiv.className = 'day-tasks open';
+        dayHeader.addEventListener('click', () => {
+          dayTasksDiv.classList.toggle('open');
+          dayHeader.querySelector('.toggle-icon').innerText = dayTasksDiv.classList.contains('open') ? '▼' : '▶';
+        });
+        for (let task of tasks) {
+          const taskDiv = document.createElement('div');
+          taskDiv.className = 'completed-item';
+          const textSpan = document.createElement('span');
+          textSpan.className = 'task-text-archive';
+          textSpan.textContent = `✘ ${task.text}`;
+          const revertBtn = document.createElement('button');
+          revertBtn.className = 'revert-task-btn';
+          revertBtn.textContent = '↺ вернуть';
+          revertBtn.setAttribute('data-id', task.id);
+          taskDiv.appendChild(textSpan);
+          taskDiv.appendChild(revertBtn);
+          dayTasksDiv.appendChild(taskDiv);
+        }
+        dayDiv.appendChild(dayHeader);
+        dayDiv.appendChild(dayTasksDiv);
+        monthContent.appendChild(dayDiv);
+      }
+      monthDiv.appendChild(monthHeader);
+      monthDiv.appendChild(monthContent);
+      container.appendChild(monthDiv);
+    }
+    document.querySelectorAll('.revert-task-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = parseInt(btn.getAttribute('data-id'));
+        revertMainTask(id);
+      });
+    });
+  }
+
+  function attachSwipe(element, taskId) {
+    let touchStartX = 0, isSwiping = false, startY = 0;
+    element.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isSwiping = false;
+    });
+    element.addEventListener('touchmove', (e) => {
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - startY;
+      if (Math.abs(dx) > 20 && Math.abs(dx) > Math.abs(dy)) {
+        e.preventDefault();
+        isSwiping = true;
+        element.style.transform = `translateX(${dx * 0.25}px)`;
+      }
+    });
+    element.addEventListener('touchend', (e) => {
+      if (isSwiping && e.changedTouches[0]) {
+        const delta = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(delta) > 55) completeMainTask(taskId, element);
+      }
+      element.style.transform = '';
+    });
+    let mouseStart = 0, mouseDown = false;
+    element.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      mouseDown = true;
+      mouseStart = e.clientX;
+      element.style.transition = 'none';
+      const onMove = (me) => {
+        if (!mouseDown) return;
+        const dx = me.clientX - mouseStart;
+        if (Math.abs(dx) > 15) element.style.transform = `translateX(${dx * 0.2}px)`;
+      };
+      const onUp = (me) => {
+        if (mouseDown) {
+          const dx = me.clientX - mouseStart;
+          if (Math.abs(dx) > 50) completeMainTask(taskId, element);
+          element.style.transform = '';
+          mouseDown = false;
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        }
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  }
+
+  function renderAll() {
+    renderActive();
+    renderDailyBlock();
+    renderCompletedArchive();
+    updateStreakDisplay();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
 
   // ========== АВТОРИЗАЦИЯ ==========
-  auth.onAuthStateChanged(async user=>{
-    if(!user){ loginScreen.style.display='block'; appContainer.style.display='none'; return; }
-    currentUser=user; loginScreen.style.display='none'; appContainer.style.display='block';
-    document.getElementById('userNameSpan').innerHTML=`${user.displayName||user.email}`;
-    if(!kidEmail && user.email!=='parent@test.com'){ let m=prompt('Введите email ребёнка (его Google-аккаунт):'); if(m) kidEmail=m; else kidEmail='none'; }
-    isRealKid = (kidEmail === currentUser.email);
-    if(isRealKid){ document.getElementById('addTaskPanel').style.display='none'; document.getElementById('kidModeBtn').style.display='none'; }
-    await loadKidDataFromFirestore();
-    loadMyData();
-    if(isKidMode && !isRealKid){ renderKidTasksForMentor(); renderKidDailyForMentor(); } else { renderEverything(); }
+  const loginOverlay = document.getElementById('loginOverlay');
+  const appDiv = document.getElementById('app');
+  const userEmailSpan = document.getElementById('userEmail');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  async function onLogin(user) {
+    currentUser = user;
+    userEmailSpan.textContent = user.email;
+    loginOverlay.style.display = 'none';
+    appDiv.style.display = 'block';
+    await loadFromFirestore();
+  }
+
+  function onLogout() {
+    currentUser = null;
+    loginOverlay.style.display = 'flex';
+    appDiv.style.display = 'none';
+  }
+
+  document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      await auth.signInWithPopup(provider);
+    } catch (e) {
+      showNotification('Ошибка входа: ' + e.message);
+    }
   });
-  document.getElementById('googleLoginBtn').onclick=async()=>{ let p=new firebase.auth.GoogleAuthProvider(); await auth.signInWithPopup(p); };
-  document.getElementById('logoutBtn').onclick=()=>auth.signOut();
-  document.getElementById('kidModeBtn').onclick=()=>{ if(isRealKid) return; isKidMode=!isKidMode; if(isKidMode){ renderKidTasksForMentor(); renderKidDailyForMentor(); document.getElementById('addTaskPanel').style.display='flex'; document.getElementById('addMainBtn').onclick=()=>addKidTaskByMentor(document.getElementById('mainTaskInput').value); } else { renderEverything(); document.getElementById('addMainBtn').onclick=()=>addMyTask(document.getElementById('mainTaskInput').value); } };
-  document.getElementById('addMainBtn').onclick=()=>addMyTask(document.getElementById('mainTaskInput').value);
-  document.getElementById('addDailyBtn').onclick=()=>addMyDaily(document.getElementById('newDailyInput').value);
-  document.getElementById('dailyHeader').onclick=()=>{ let l=document.getElementById('dailyList'); let a=document.getElementById('addDailyContainer'); l.classList.toggle('open'); a.style.display=l.classList.contains('open')?'flex':'none'; };
-  const tabs=document.querySelectorAll('.tab-btn'); const pages={active:document.getElementById('activePage'), completed:document.getElementById('completedPage')};
-  tabs.forEach(btn=>{ btn.onclick=()=>{ tabs.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); Object.values(pages).forEach(p=>p.classList.remove('active-page')); pages[btn.dataset.tab].classList.add('active-page'); if(btn.dataset.tab==='completed') renderArchive(); }; });
-  if(!localStorage.getItem('daily_last_reset')) localStorage.setItem('daily_last_reset',new Date().toDateString());
+
+  logoutBtn.addEventListener('click', async () => {
+    await auth.signOut();
+    onLogout();
+  });
+
+  auth.onAuthStateChanged(user => {
+    if (user) onLogin(user);
+    else onLogout();
+  });
+
+  // ========== СОБЫТИЯ ИНТЕРФЕЙСА ==========
+  document.getElementById("addMainBtn").addEventListener("click", () => {
+    addMainTask(document.getElementById("mainTaskInput").value);
+    document.getElementById("mainTaskInput").value = "";
+  });
+  document.getElementById("mainTaskInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addMainTask(e.target.value);
+      e.target.value = "";
+    }
+  });
+  document.getElementById("addDailyBtn").addEventListener("click", () => {
+    addDailyTask(document.getElementById("newDailyInput").value);
+    document.getElementById("newDailyInput").value = "";
+  });
+  document.getElementById("newDailyInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addDailyTask(e.target.value);
+      e.target.value = "";
+    }
+  });
+
+  const dailyHeader = document.getElementById('dailyHeader');
+  const dailyList = document.getElementById('dailyList');
+  const addDailyContainer = document.getElementById('addDailyContainer');
+  dailyHeader.addEventListener('click', () => {
+    const isOpen = dailyList.classList.toggle('open');
+    addDailyContainer.style.display = isOpen ? 'flex' : 'none';
+  });
+
+  const activePageDiv = document.getElementById('activePage');
+  const completedPageDiv = document.getElementById('completedPage');
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  function switchTab(tabId) {
+    if (tabId === 'active') {
+      activePageDiv.classList.add('active-page');
+      completedPageDiv.classList.remove('active-page');
+    } else {
+      activePageDiv.classList.remove('active-page');
+      completedPageDiv.classList.add('active-page');
+      renderCompletedArchive();
+    }
+    tabBtns.forEach(btn => {
+      if (btn.dataset.tab === tabId) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  }
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
 </script>
 </body>
 </html>
