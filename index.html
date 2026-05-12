@@ -941,11 +941,11 @@
     modal.classList.remove('open');
   });
 
-    const loadingOverlay = document.getElementById('loadingOverlay');
+      const loadingScreen = document.getElementById('loadingScreen');
   
   auth.onAuthStateChanged(async user => {
     // Скрываем экран загрузки в любом случае
-    loadingOverlay.style.display = 'none';
+    if (loadingScreen) loadingScreen.style.display = 'none';
     
     if (user) {
       currentUser = user;
@@ -956,7 +956,6 @@
     } else {
       const savedUid = localStorage.getItem('firebase_user');
       if (savedUid) {
-        // Если есть сохранённый UID, но Firebase не восстановил — пробуем ещё раз
         setTimeout(async () => {
           const current = auth.currentUser;
           if (!current && savedUid) {
