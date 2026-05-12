@@ -100,6 +100,43 @@
       color: white;
     }
 
+    /* Экран входа — кнопка по центру */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: #fffdf5;
+      border-radius: 48px;
+      padding: 40px 30px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+    }
+    .google-btn {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-family: 'Kalam', cursive;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
     /* Нижний счётчик */
     .footer-streak {
       background: #fff0d6;
@@ -462,7 +499,7 @@
       border: none;
       font-size: 1rem;
       cursor: pointer;
-      color: #b48b4a;
+      color: #b48a4b;
       padding: 4px 12px;
       border-radius: 30px;
       text-decoration: none !important;
@@ -511,7 +548,7 @@
 </head>
 <body>
 
-<div id="loginOverlay" class="login-overlay" style="display: flex;">
+<div id="loginOverlay" class="login-overlay">
   <div class="login-card">
     <h2>📋 Самодисциплина</h2>
     <p style="margin: 15px 0;">Войдите через Google, чтобы сохранять прогресс</p>
@@ -565,7 +602,7 @@
     <p><strong>👤 Аккаунт:</strong> <span id="modalUserEmail"></span></p>
     <button id="logoutFromModalBtn">🚪 Выйти из аккаунта</button>
     <hr style="margin:15px 0; border-color:#eedbad;">
-    <p><strong>📋 О программе</strong><br>Приложение помогает и мотивирует на выполнение и исполнение запланированных заданий.<br>Версия 1.0</p>
+    <p><strong>📋 О программе</strong><br>Это приложение способствует эффективному выполнению и поддерживает мотивацию при реализации ваших запланированных задач.<br>Версия 1.0</p>
     <p><strong>💖 Помощь разработчику</strong><br><span id="devHelpPlaceholder">(пока пусто, скоро добавим)</span></p>
     <button class="close-modal" id="closeModalBtn">Закрыть</button>
   </div>
@@ -590,7 +627,7 @@
   };
   const ACHIEVEMENTS = [
     { days: 7, icon: "🌿", message: "🎉 7 дней подряд! Ты молодец! Можешь порадовать себя любимой вкусняшкой 🍰" },
-    { days: 15, icon: "🌸", message: "🌟 15 дней подряд! Отличная дисциплина! Купи себе новую книгу или сходи в кино 🎬" },
+    { days: 15, icon: "🌸", message: "🌟 15 дней подряд! Отличная дисциплина! Купи себе бесполезную, но давно желанную вещь ну или сходи в кино 🎬" },
     { days: 30, icon: "🏆", message: "🏆 30 дней подряд! Ты огонь! Заслужил ужин в любимом ресторане 🍽️" },
     { days: 60, icon: "💎", message: "💎 60 дней подряд! Вау! Побалуй себя новым гаджетом или крутой вещью 📱" },
     { days: 180, icon: "👑", message: "👑 Полгода подряд! Ты легенда! Порадуй себя чем-то особенным — ты это заслужил! 🎁" },
