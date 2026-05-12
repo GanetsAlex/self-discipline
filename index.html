@@ -9,568 +9,83 @@
   <link rel="apple-touch-icon" sizes="152x152" href="/icons/ios/152.png">
   <link rel="apple-touch-icon" sizes="120x120" href="/icons/ios/120.png">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background: #e2d9c9;
-      font-family: 'Kalam', 'Segoe UI', cursive;
-      padding: 14px;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { background: #e2d9c9; font-family: 'Kalam', 'Segoe UI', cursive; padding: 14px; }
     @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
-
-    .app {
-      max-width: 620px;
-      margin: 0 auto;
-      background: #fffdf5;
-      border-radius: 48px 32px 56px 32px;
-      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .settings-btn {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      cursor: pointer;
-      color: #b48a4b;
-      z-index: 10;
-      transition: transform 0.2s;
-    }
+    .app { max-width: 620px; margin: 0 auto; background: #fffdf5; border-radius: 48px 32px 56px 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2); overflow: hidden; position: relative; }
+    .settings-btn { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #b48a4b; z-index: 10; transition: transform 0.2s; }
     .settings-btn:active { transform: rotate(30deg); }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 2000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      visibility: hidden;
-      transition: 0.2s;
-    }
-    .modal-overlay.open {
-      opacity: 1;
-      visibility: visible;
-    }
-    .modal-card {
-      background: #fffdf5;
-      border-radius: 48px;
-      padding: 30px 24px;
-      max-width: 320px;
-      width: 85%;
-      font-family: 'Kalam', cursive;
-      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
-      text-align: center;
-    }
-    .modal-card h3 {
-      color: #b48742;
-      margin-bottom: 20px;
-      font-size: 1.4rem;
-    }
-    .modal-card p {
-      margin: 12px 0;
-      font-size: 1rem;
-      word-break: break-word;
-    }
-    .modal-card button {
-      background: #efdfbe;
-      border: none;
-      border-radius: 40px;
-      padding: 10px 20px;
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-    .close-modal {
-      background: #e08e6a;
-      color: white;
-    }
-    #resetMyDataBtn {
-      background: #f44336;
-      color: white;
-    }
-
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-      z-index: 1500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .loading-card {
-      background: #fffdf5;
-      border-radius: 48px;
-      padding: 40px 30px;
-      text-align: center;
-      max-width: 320px;
-      width: 90%;
-      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
-    }
-    .loading-card h2 {
-      font-family: 'Kalam', cursive;
-      color: #b48742;
-    }
-
-    .login-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-card {
-      background: #fffdf5;
-      border-radius: 48px;
-      padding: 40px 30px;
-      text-align: center;
-      max-width: 320px;
-      width: 90%;
-      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
-    }
-    .google-btn {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 50px;
-      padding: 12px 24px;
-      font-family: 'Kalam', cursive;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .footer-streak {
-      background: #fff0d6;
-      padding: 10px 16px;
-      text-align: center;
-      border-top: 1px solid #eedbad;
-      font-family: 'Kalam', cursive;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      cursor: help;
-      position: relative;
-    }
-    .tooltip-footer {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: help;
-      border-bottom: 1px dotted #b48a4b;
-    }
-    .tooltip-footer .tooltip-text {
-      visibility: hidden;
-      width: 280px;
-      background-color: #2c281ee6;
-      backdrop-filter: blur(6px);
-      color: #ffefcf;
-      text-align: center;
-      border-radius: 28px;
-      padding: 8px 12px;
-      position: absolute;
-      z-index: 1000;
-      bottom: 140%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.7rem;
-      font-family: 'Kalam', monospace;
-      white-space: normal;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      border: 1px solid #dbb776;
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
-    }
-    .tooltip-footer:hover .tooltip-text {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .tabs {
-      display: flex;
-      background: #faf2e2;
-      border-bottom: 2px solid #eedbad;
-      padding: 8px 16px 0;
-      gap: 12px;
-    }
-    .tab-btn {
-      flex: 1;
-      font-family: 'Kalam', cursive;
-      font-size: 1.3rem;
-      font-weight: bold;
-      padding: 12px 0 8px;
-      background: none;
-      border: none;
-      color: #b28b54;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: 0.2s;
-    }
-    .tab-btn.active {
-      color: #4f3a1c;
-      border-bottom-color: #e3b26b;
-      background: linear-gradient(to top, #fff3e2, transparent);
-    }
-    .page {
-      display: none;
-      padding: 20px 16px 28px;
-      animation: fade 0.2s;
-    }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.2s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-card { background: #fffdf5; border-radius: 48px; padding: 30px 24px; max-width: 320px; width: 85%; font-family: 'Kalam', cursive; box-shadow: 0 20px 35px rgba(0,0,0,0.3); text-align: center; }
+    .modal-card h3 { color: #b48742; margin-bottom: 20px; font-size: 1.4rem; }
+    .modal-card p { margin: 12px 0; font-size: 1rem; word-break: break-word; }
+    .modal-card button { background: #efdfbe; border: none; border-radius: 40px; padding: 10px 20px; font-family: 'Kalam', cursive; font-size: 1rem; cursor: pointer; margin-top: 15px; }
+    .close-modal { background: #e08e6a; color: white; }
+    #resetMyDataBtn { background: #f44336; color: white; }
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1500; display: flex; align-items: center; justify-content: center; }
+    .loading-card { background: #fffdf5; border-radius: 48px; padding: 40px 30px; text-align: center; max-width: 320px; width: 90%; box-shadow: 0 20px 35px rgba(0,0,0,0.3); }
+    .loading-card h2 { font-family: 'Kalam', cursive; color: #b48742; }
+    .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; }
+    .login-card { background: #fffdf5; border-radius: 48px; padding: 40px 30px; text-align: center; max-width: 320px; width: 90%; box-shadow: 0 20px 35px rgba(0,0,0,0.3); }
+    .google-btn { background: #fff; border: 1px solid #ddd; border-radius: 50px; padding: 12px 24px; font-family: 'Kalam', cursive; font-size: 1.2rem; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .footer-streak { background: #fff0d6; padding: 10px 16px; text-align: center; border-top: 1px solid #eedbad; font-family: 'Kalam', cursive; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; cursor: help; position: relative; }
+    .tooltip-footer { position: relative; display: inline-flex; align-items: center; gap: 6px; cursor: help; border-bottom: 1px dotted #b48a4b; }
+    .tooltip-footer .tooltip-text { visibility: hidden; width: 280px; background-color: #2c281ee6; backdrop-filter: blur(6px); color: #ffefcf; text-align: center; border-radius: 28px; padding: 8px 12px; position: absolute; z-index: 1000; bottom: 140%; left: 50%; transform: translateX(-50%); font-size: 0.7rem; font-family: 'Kalam', monospace; white-space: normal; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid #dbb776; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .tooltip-footer:hover .tooltip-text { visibility: visible; opacity: 1; }
+    .tabs { display: flex; background: #faf2e2; border-bottom: 2px solid #eedbad; padding: 8px 16px 0; gap: 12px; }
+    .tab-btn { flex: 1; font-family: 'Kalam', cursive; font-size: 1.3rem; font-weight: bold; padding: 12px 0 8px; background: none; border: none; color: #b28b54; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
+    .tab-btn.active { color: #4f3a1c; border-bottom-color: #e3b26b; background: linear-gradient(to top, #fff3e2, transparent); }
+    .page { display: none; padding: 20px 16px 28px; animation: fade 0.2s; }
     .page.active-page { display: block; }
     @keyframes fade { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: translateX(0); } }
-
-    .add-task {
-      display: flex;
-      gap: 12px;
-      background: #fff6ea;
-      border-radius: 60px;
-      padding: 4px 8px;
-      margin-bottom: 24px;
-      box-shadow: inset 0 0 0 1px #fff0df, 0 2px 5px rgba(0,0,0,0.02);
-    }
-    .add-task input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 12px 12px;
-      font-family: 'Kalam', cursive;
-      font-size: 1.1rem;
-      outline: none;
-    }
-    .add-task button {
-      background: #f5e0bb;
-      border: none;
-      border-radius: 50px;
-      padding: 0 24px;
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: #7b5a32;
-      cursor: pointer;
-    }
-    .daily-global {
-      background: #fef5e8;
-      border-radius: 36px;
-      margin-bottom: 28px;
-      padding: 8px 12px 12px 16px;
-      border: 1px solid #f0e2ce;
-    }
-    .daily-global-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 4px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #7b623c;
-      font-size: 1.1rem;
-      border-radius: 30px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .add-task { display: flex; gap: 12px; background: #fff6ea; border-radius: 60px; padding: 4px 8px; margin-bottom: 24px; box-shadow: inset 0 0 0 1px #fff0df, 0 2px 5px rgba(0,0,0,0.02); }
+    .add-task input { flex: 1; background: transparent; border: none; padding: 12px 12px; font-family: 'Kalam', cursive; font-size: 1.1rem; outline: none; }
+    .add-task button { background: #f5e0bb; border: none; border-radius: 50px; padding: 0 24px; font-size: 1.6rem; font-weight: bold; color: #7b5a32; cursor: pointer; }
+    .daily-global { background: #fef5e8; border-radius: 36px; margin-bottom: 28px; padding: 8px 12px 12px 16px; border: 1px solid #f0e2ce; }
+    .daily-global-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; cursor: pointer; font-weight: bold; color: #7b623c; font-size: 1.1rem; border-radius: 30px; flex-wrap: wrap; gap: 8px; }
     .daily-global-header.green { background: #e8f5e9; }
-    .daily-progress-badge {
-      background: #e7dbbc;
-      border-radius: 40px;
-      padding: 4px 12px;
-      font-size: 0.75rem;
-      font-family: monospace;
-    }
-    .daily-list {
-      list-style: none;
-      margin-top: 8px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .daily-progress-badge { background: #e7dbbc; border-radius: 40px; padding: 4px 12px; font-size: 0.75rem; font-family: monospace; }
+    .daily-list { list-style: none; margin-top: 8px; display: none; flex-direction: column; gap: 10px; }
     .daily-list.open { display: flex; }
-    .daily-subtask {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 6px 0;
-      border-bottom: 1px dashed #f0e2ce;
-    }
-    .daily-subtask input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      accent-color: #7da06e;
-      cursor: pointer;
-    }
-    .daily-subtask span {
-      flex: 1;
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      word-break: break-word;
-    }
+    .daily-subtask { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px dashed #f0e2ce; }
+    .daily-subtask input[type="checkbox"] { width: 22px; height: 22px; accent-color: #7da06e; cursor: pointer; }
+    .daily-subtask span { flex: 1; font-family: 'Kalam', cursive; font-size: 1rem; word-break: break-word; }
     .daily-subtask .completed { text-decoration: line-through; color: #84a06b; }
-    .delete-daily-btn {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: #e08e6a;
-      padding: 0 8px;
-    }
-    .add-daily {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .add-daily input {
-      flex: 1;
-      font-family: 'Kalam', cursive;
-      background: #fffaf2;
-      border: 1px solid #eedcbb;
-      border-radius: 40px;
-      padding: 6px 12px;
-      outline: none;
-    }
-    .add-daily button {
-      background: #efdfbe;
-      border: none;
-      border-radius: 30px;
-      padding: 0 14px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-
-    .task-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .task-item {
-      background: #ffffff;
-      border-radius: 36px;
-      padding: 12px 16px 12px 20px;
-      border: 1px solid #f3ebdb;
-    }
-    .task-main-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .task-left {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      flex: 1;
-      min-width: 0;
-    }
-    .task-number {
-      font-weight: 700;
-      font-size: 1.35rem;
-      color: #c9a05e;
-      min-width: 40px;
-    }
-    .task-text {
-      flex: 1;
-      font-size: 1.2rem;
-      line-height: 1.45;
-      font-family: 'Kalam', cursive;
-      color: #3e3522;
-      white-space: normal;
-      word-break: break-word;
-    }
-    .task-text.striked-red {
-      position: relative;
-      color: #8e7a5b;
-    }
-    .task-text.striked-red::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: repeating-linear-gradient(180deg, transparent 0px, transparent 12px, #e65c5c 12px, #e65c5c 15px, transparent 15px, transparent 28px);
-      background-size: 100% 28px;
-      pointer-events: none;
-    }
-    .task-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 6px;
-      margin-left: 52px;
-    }
-    .calendar-badge {
-      background: #fef2e1;
-      border-radius: 30px;
-      padding: 4px 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.7rem;
-      font-family: monospace;
-      color: #b48a4b;
-      cursor: pointer;
-      position: relative;
-    }
-    .tooltip-custom {
-      position: absolute;
-      bottom: 140%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2c281ee6;
-      backdrop-filter: blur(6px);
-      color: #ffefcf;
-      padding: 8px 14px;
-      border-radius: 28px;
-      font-size: 0.7rem;
-      white-space: normal;
-      min-width: 160px;
-      text-align: center;
-      opacity: 0;
-      transition: opacity 0.18s;
-      pointer-events: none;
-    }
-    .calendar-badge:hover .tooltip-custom,
-    .calendar-badge:active .tooltip-custom { opacity: 1; }
-    .swipe-hint {
-      font-size: 1.2rem;
-      margin-left: 8px;
-      color: #ddc79b;
-      flex-shrink: 0;
-    }
-    .task-item.completing {
-      transform: translateX(110%);
-      opacity: 0;
-      transition: 0.35s cubic-bezier(0.2,0.9,0.4,1);
-      pointer-events: none;
-    }
-
-    .completed-group {
-      background: #fcf7ed;
-      border-radius: 32px;
-      margin-bottom: 20px;
-      padding: 8px 12px;
-    }
-    .month-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 8px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: #b48742;
-      border-left: 5px solid #e6bc7e;
-      padding-left: 12px;
-    }
+    .delete-daily-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #e08e6a; padding: 0 8px; }
+    .add-daily { display: flex; gap: 8px; margin-top: 12px; }
+    .add-daily input { flex: 1; font-family: 'Kalam', cursive; background: #fffaf2; border: 1px solid #eedcbb; border-radius: 40px; padding: 6px 12px; outline: none; }
+    .add-daily button { background: #efdfbe; border: none; border-radius: 30px; padding: 0 14px; cursor: pointer; font-size: 1.2rem; }
+    .task-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .task-item { background: #ffffff; border-radius: 36px; padding: 12px 16px 12px 20px; border: 1px solid #f3ebdb; }
+    .task-main-row { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+    .task-left { display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; }
+    .task-number { font-weight: 700; font-size: 1.35rem; color: #c9a05e; min-width: 40px; }
+    .task-text { flex: 1; font-size: 1.2rem; line-height: 1.45; font-family: 'Kalam', cursive; color: #3e3522; white-space: normal; word-break: break-word; }
+    .task-text.striked-red { position: relative; color: #8e7a5b; }
+    .task-text.striked-red::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(180deg, transparent 0px, transparent 12px, #e65c5c 12px, #e65c5c 15px, transparent 15px, transparent 28px); background-size: 100% 28px; pointer-events: none; }
+    .task-meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; margin-left: 52px; }
+    .calendar-badge { background: #fef2e1; border-radius: 30px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; font-size: 0.7rem; font-family: monospace; color: #b48a4b; cursor: pointer; position: relative; }
+    .tooltip-custom { position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%); background: #2c281ee6; backdrop-filter: blur(6px); color: #ffefcf; padding: 8px 14px; border-radius: 28px; font-size: 0.7rem; white-space: normal; min-width: 160px; text-align: center; opacity: 0; transition: opacity 0.18s; pointer-events: none; }
+    .calendar-badge:hover .tooltip-custom, .calendar-badge:active .tooltip-custom { opacity: 1; }
+    .swipe-hint { font-size: 1.2rem; margin-left: 8px; color: #ddc79b; flex-shrink: 0; }
+    .task-item.completing { transform: translateX(110%); opacity: 0; transition: 0.35s cubic-bezier(0.2,0.9,0.4,1); pointer-events: none; }
+    .completed-group { background: #fcf7ed; border-radius: 32px; margin-bottom: 20px; padding: 8px 12px; }
+    .month-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; color: #b48742; border-left: 5px solid #e6bc7e; padding-left: 12px; }
     .month-header .toggle-icon { font-size: 1rem; color: #c2a05e; }
     .month-content { display: none; margin-top: 8px; }
     .month-content.open { display: block; }
     .day-group { margin: 12px 0 12px 20px; }
-    .day-header {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #9c824f;
-      background: #fff7ec;
-      border-radius: 30px;
-    }
+    .day-header { display: flex; justify-content: space-between; padding: 6px 8px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: #9c824f; background: #fff7ec; border-radius: 30px; }
     .day-tasks { display: none; padding-left: 20px; }
     .day-tasks.open { display: block; }
-    .completed-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 8px 8px 20px;
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      border-left: 2px solid #dbbc87;
-    }
-    .completed-item .task-text-archive {
-      flex: 1;
-      text-decoration: line-through;
-      color: #7b6e51;
-      word-break: break-word;
-    }
-    .revert-task-btn {
-      background: none;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-      color: #b48a4b;
-      padding: 4px 12px;
-      border-radius: 30px;
-      text-decoration: none !important;
-      font-family: 'Kalam', cursive;
-    }
-    .empty-msg {
-      text-align: center;
-      color: #cdbc94;
-      padding: 30px;
-      font-family: 'Kalam', cursive;
-    }
-    .daily-label {
-      position: relative;
-      cursor: help;
-      border-bottom: 1px dotted #b48a4b;
-    }
-    .daily-label .tooltip-text {
-      visibility: hidden;
-      width: 160px;
-      background-color: #2c281ee6;
-      backdrop-filter: blur(6px);
-      color: #ffefcf;
-      text-align: center;
-      border-radius: 28px;
-      padding: 8px 12px;
-      position: absolute;
-      z-index: 1000;
-      bottom: 140%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.75rem;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
-    }
-    .daily-label:hover .tooltip-text,
-    .daily-label:active .tooltip-text {
-      visibility: visible;
-      opacity: 1;
-    }
+    .completed-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 8px 8px 20px; font-family: 'Kalam', cursive; font-size: 1rem; border-left: 2px solid #dbbc87; }
+    .completed-item .task-text-archive { flex: 1; text-decoration: line-through; color: #7b6e51; word-break: break-word; }
+    .revert-task-btn { background: none; border: none; font-size: 1rem; cursor: pointer; color: #b48a4b; padding: 4px 12px; border-radius: 30px; text-decoration: none !important; font-family: 'Kalam', cursive; }
+    .empty-msg { text-align: center; color: #cdbc94; padding: 30px; font-family: 'Kalam', cursive; }
+    .daily-label { position: relative; cursor: help; border-bottom: 1px dotted #b48a4b; }
+    .daily-label .tooltip-text { visibility: hidden; width: 160px; background-color: #2c281ee6; backdrop-filter: blur(6px); color: #ffefcf; text-align: center; border-radius: 28px; padding: 8px 12px; position: absolute; z-index: 1000; bottom: 140%; left: 50%; transform: translateX(-50%); font-size: 0.75rem; white-space: nowrap; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .daily-label:hover .tooltip-text, .daily-label:active .tooltip-text { visibility: visible; opacity: 1; }
   </style>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -584,7 +99,7 @@
   </div>
 </div>
 
-<div id="loginOverlay" class="login-overlay" style="display: none;">
+<div id="loginOverlay" class="login-overlay">
   <div class="login-card">
     <h2>📋 Самодисциплина</h2>
     <p style="margin: 15px 0;">Войдите через Google, чтобы сохранять прогресс</p>
@@ -914,7 +429,7 @@
   function renderAll() { renderActive(); renderDailyBlock(); renderCompletedArchive(); updateFooterStreak(); }
   function escapeHtml(str) { let d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
-  // Элементы DOM
+  // DOM элементы
   const loadingScreen = document.getElementById('loadingScreen');
   const loginOverlay = document.getElementById('loginOverlay');
   const appDiv = document.getElementById('app');
@@ -928,7 +443,7 @@
     try { await auth.signInWithPopup(provider); } catch(e) { showNotification('Ошибка входа: ' + e.message); }
   };
   document.getElementById('logoutFromModalBtn').onclick = async () => { await auth.signOut(); modal.classList.remove('open'); };
-  document.getElementById('settingsBtn').onclick = () => { modalUserEmail.innerText = currentUser?.email || '—'; modal.classList.add('open'); };
+  document.getElementById('settingsBtn').onclick = () => { if (currentUser) modalUserEmail.innerText = currentUser.email; modal.classList.add('open'); };
   document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('open');
 
   document.getElementById('resetMyDataBtn')?.addEventListener('click', async () => {
@@ -970,32 +485,9 @@
       .catch(err => console.error('SW регистрация ошибка:', err));
   }
 
-  // ФИКС: сохранение входа в APK
-  (function() {
-    let lastActive = localStorage.getItem('last_active');
-    let lastUser = localStorage.getItem('last_user');
-    if (lastUser && !currentUser) {
-      console.log('Обнаружен сохранённый пользователь, ждём Firebase...');
-      setTimeout(() => {
-        if (!currentUser && lastUser) {
-          showNotification('Попробуйте войти ещё раз. Если проблема повторяется — переустановите приложение.');
-        }
-      }, 3000);
-    }
-    setInterval(() => {
-      if (currentUser) {
-        localStorage.setItem('last_active', Date.now());
-        localStorage.setItem('last_user', currentUser.uid);
-      }
-    }, 30000);
-    if (lastActive && (Date.now() - lastActive) > 1000 * 60 * 60 * 12) {
-      console.log('Прошло много времени с последней активности');
-    }
-  })();
-
-  // АВТОРИЗАЦИЯ — главный блок
+  // АВТОРИЗАЦИЯ — без лишних уведомлений
   auth.onAuthStateChanged(async user => {
-    // Скрываем экран загрузки в любом случае
+    // Скрываем экран загрузки
     if (loadingScreen) loadingScreen.style.display = 'none';
     
     if (user) {
@@ -1003,21 +495,9 @@
       loginOverlay.style.display = 'none';
       appDiv.style.display = 'block';
       await loadFromFirestore();
-      localStorage.setItem('firebase_user', user.uid);
     } else {
-      const savedUid = localStorage.getItem('firebase_user');
-      if (savedUid) {
-        setTimeout(async () => {
-          const current = auth.currentUser;
-          if (!current && savedUid) {
-            loginOverlay.style.display = 'flex';
-            appDiv.style.display = 'none';
-          }
-        }, 2000);
-      } else {
-        loginOverlay.style.display = 'flex';
-        appDiv.style.display = 'none';
-      }
+      loginOverlay.style.display = 'flex';
+      appDiv.style.display = 'none';
     }
   });
 </script>
