@@ -945,5 +945,12 @@
     if (btn.dataset.tab === 'completed') renderCompletedArchive();
   });
 </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW зарегистрирован:', reg))
+        .catch(err => console.error('SW регистрация ошибка:', err));
+    }
+  </script>
 </body>
 </html>
