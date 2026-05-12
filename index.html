@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Самодисциплина · Задачи и Дейлики</title>
   <link rel="manifest" href="/manifest.json">
-  <!-- iOS / Apple (обязательно для iPhone) -->
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/ios/180.png">
   <link rel="apple-touch-icon" sizes="152x152" href="/icons/ios/152.png">
   <link rel="apple-touch-icon" sizes="120x120" href="/icons/ios/120.png">
@@ -35,7 +34,6 @@
       position: relative;
     }
 
-    /* Шестерёнка */
     .settings-btn {
       position: absolute;
       top: 12px;
@@ -50,7 +48,6 @@
     }
     .settings-btn:active { transform: rotate(30deg); }
 
-    /* Модальное окно */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -109,8 +106,6 @@
       color: white;
     }
 
-    /* Экран входа — кнопка по центру */
-        /* Экран загрузки */
     .loading-overlay {
       position: fixed;
       top: 0;
@@ -136,7 +131,28 @@
       font-family: 'Kalam', cursive;
       color: #b48742;
     }
-    
+
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: #fffdf5;
+      border-radius: 48px;
+      padding: 40px 30px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+    }
     .google-btn {
       background: #fff;
       border: 1px solid #ddd;
@@ -152,7 +168,6 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    /* Нижний счётчик */
     .footer-streak {
       background: #fff0d6;
       padding: 10px 16px;
@@ -562,12 +577,14 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+
 <div id="loadingScreen" class="loading-overlay" style="display: flex;">
   <div class="loading-card">
     <h2>⏳ Загрузка...</h2>
   </div>
 </div>
-<div id="loginOverlay" class="login-overlay">
+
+<div id="loginOverlay" class="login-overlay" style="display: none;">
   <div class="login-card">
     <h2>📋 Самодисциплина</h2>
     <p style="margin: 15px 0;">Войдите через Google, чтобы сохранять прогресс</p>
@@ -645,6 +662,7 @@
   let currentData = {
     mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0
   };
+  
   const ACHIEVEMENTS = [
     { days: 7, icon: "🌿", message: "🎉 7 дней подряд! Ты молодец! Можешь порадовать себя любимой вкусняшкой 🍰" },
     { days: 15, icon: "🌸", message: "🌟 15 дней подряд! Отличная дисциплина! Купи себе может не нужную, но давно желанную вещь, ну или сходи в кино 🎬" },
@@ -896,12 +914,14 @@
   function renderAll() { renderActive(); renderDailyBlock(); renderCompletedArchive(); updateFooterStreak(); }
   function escapeHtml(str) { let d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
-  // Авторизация
+  // Элементы DOM
+  const loadingScreen = document.getElementById('loadingScreen');
   const loginOverlay = document.getElementById('loginOverlay');
   const appDiv = document.getElementById('app');
   const modal = document.getElementById('settingsModal');
   const modalUserEmail = document.getElementById('modalUserEmail');
-  
+
+  // Обработчики кнопок
   document.getElementById('googleLoginBtn').onclick = async () => {
     let provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
@@ -911,20 +931,11 @@
   document.getElementById('settingsBtn').onclick = () => { modalUserEmail.innerText = currentUser?.email || '—'; modal.classList.add('open'); };
   document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('open');
 
-  // Сброс ВСЕХ данных текущего пользователя
   document.getElementById('resetMyDataBtn')?.addEventListener('click', async () => {
     if (!currentUser) return;
     const confirm = window.confirm('❌ ВНИМАНИЕ! Это удалит ВСЕ твои задачи, дейлики и счётчик подряд. Отменить будет нельзя. Продолжить?');
     if (!confirm) return;
-    
-    currentData = {
-      mainTasks: [],
-      dailySubtasks: [],
-      streakDays: 0,
-      lastCompletedDate: null,
-      lastAchievementNotified: 0
-    };
-    
+    currentData = { mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0 };
     await db.collection('users').doc(currentUser.uid).set({
       email: currentUser.email,
       mainTasks: [],
@@ -934,15 +945,55 @@
       lastAchievementNotified: 0,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    
     renderAll();
     updateFooterStreak();
     showNotification('✅ Все данные сброшены. Начни с чистого листа!');
     modal.classList.remove('open');
   });
 
-      const loadingScreen = document.getElementById('loadingScreen');
+  document.getElementById('addMainBtn').onclick = () => { addMainTask(document.getElementById('mainTaskInput').value); document.getElementById('mainTaskInput').value = ''; };
+  document.getElementById('addDailyBtn').onclick = () => { addDailyTask(document.getElementById('newDailyInput').value); document.getElementById('newDailyInput').value = ''; };
+  document.getElementById('dailyHeader').onclick = () => { let l = document.getElementById('dailyList'); let a = document.getElementById('addDailyContainer'); l.classList.toggle('open'); a.style.display = l.classList.contains('open') ? 'flex' : 'none'; };
   
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('activePage').classList.toggle('active-page', btn.dataset.tab === 'active');
+    document.getElementById('completedPage').classList.toggle('active-page', btn.dataset.tab === 'completed');
+    if (btn.dataset.tab === 'completed') renderCompletedArchive();
+  });
+
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW зарегистрирован:', reg))
+      .catch(err => console.error('SW регистрация ошибка:', err));
+  }
+
+  // ФИКС: сохранение входа в APK
+  (function() {
+    let lastActive = localStorage.getItem('last_active');
+    let lastUser = localStorage.getItem('last_user');
+    if (lastUser && !currentUser) {
+      console.log('Обнаружен сохранённый пользователь, ждём Firebase...');
+      setTimeout(() => {
+        if (!currentUser && lastUser) {
+          showNotification('Попробуйте войти ещё раз. Если проблема повторяется — переустановите приложение.');
+        }
+      }, 3000);
+    }
+    setInterval(() => {
+      if (currentUser) {
+        localStorage.setItem('last_active', Date.now());
+        localStorage.setItem('last_user', currentUser.uid);
+      }
+    }, 30000);
+    if (lastActive && (Date.now() - lastActive) > 1000 * 60 * 60 * 12) {
+      console.log('Прошло много времени с последней активности');
+    }
+  })();
+
+  // АВТОРИЗАЦИЯ — главный блок
   auth.onAuthStateChanged(async user => {
     // Скрываем экран загрузки в любом случае
     if (loadingScreen) loadingScreen.style.display = 'none';
@@ -969,56 +1020,6 @@
       }
     }
   });
-
-  document.getElementById('addMainBtn').onclick = () => { addMainTask(document.getElementById('mainTaskInput').value); document.getElementById('mainTaskInput').value = ''; };
-  document.getElementById('addDailyBtn').onclick = () => { addDailyTask(document.getElementById('newDailyInput').value); document.getElementById('newDailyInput').value = ''; };
-  document.getElementById('dailyHeader').onclick = () => { let l = document.getElementById('dailyList'); let a = document.getElementById('addDailyContainer'); l.classList.toggle('open'); a.style.display = l.classList.contains('open') ? 'flex' : 'none'; };
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.onclick = () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('activePage').classList.toggle('active-page', btn.dataset.tab === 'active');
-    document.getElementById('completedPage').classList.toggle('active-page', btn.dataset.tab === 'completed');
-    if (btn.dataset.tab === 'completed') renderCompletedArchive();
-  });
-</script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('SW зарегистрирован:', reg))
-        .catch(err => console.error('SW регистрация ошибка:', err));
-    }
-  </script>
-  <script>
-  // ФИКС: сохранение входа в APK
-  (function() {
-    // Сохраняем метку времени последней активности
-    let lastActive = localStorage.getItem('last_active');
-    let lastUser = localStorage.getItem('last_user');
-    
-    // Если есть сохранённый пользователь, но Firebase его потерял — пробуем восстановить
-    if (lastUser && !currentUser) {
-      console.log('Обнаружен сохранённый пользователь, ждём Firebase...');
-      // Даём Firebase шанс восстановиться
-      setTimeout(() => {
-        if (!currentUser && lastUser) {
-          showNotification('Попробуйте войти ещё раз. Если проблема повторяется — переустановите приложение.');
-        }
-      }, 3000);
-    }
-    
-    // Обновляем активность каждые 30 секунд
-    setInterval(() => {
-      if (currentUser) {
-        localStorage.setItem('last_active', Date.now());
-        localStorage.setItem('last_user', currentUser.uid);
-      }
-    }, 30000);
-    
-    // При загрузке проверяем, не слишком ли давно был вход
-    if (lastActive && (Date.now() - lastActive) > 1000 * 60 * 60 * 12) {
-      console.log('Прошло много времени с последней активности');
-    }
-  })();
 </script>
 </body>
 </html>
