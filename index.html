@@ -932,12 +932,32 @@
   });
 
   auth.onAuthStateChanged(async user => {
-    if (!user) { loginOverlay.style.display = 'flex'; appDiv.style.display = 'none'; return; }
+  if (user) {
     currentUser = user;
     loginOverlay.style.display = 'none';
     appDiv.style.display = 'block';
     await loadFromFirestore();
-  });
+    // Сохраняем в localStorage факт входа
+    localStorage.setItem('firebase_user', user.uid);
+  } else {
+    // Проверяем, был ли сохранённый вход
+    const savedUid = localStorage.getItem('firebase_user');
+    if (savedUid) {
+      // Пробуем восстановить сессию — ждём пару секунд
+      setTimeout(async () => {
+        const current = auth.currentUser;
+        if (!current && savedUid) {
+          // Если Firebase не восстановил — показываем экран входа
+          loginOverlay.style.display = 'flex';
+          appDiv.style.display = 'none';
+        }
+      }, 2000);
+    } else {
+      loginOverlay.style.display = 'flex';
+      appDiv.style.display = 'none';
+    }
+  }
+});
 
   document.getElementById('addMainBtn').onclick = () => { addMainTask(document.getElementById('mainTaskInput').value); document.getElementById('mainTaskInput').value = ''; };
   document.getElementById('addDailyBtn').onclick = () => { addDailyTask(document.getElementById('newDailyInput').value); document.getElementById('newDailyInput').value = ''; };
@@ -957,5 +977,37 @@
         .catch(err => console.error('SW регистрация ошибка:', err));
     }
   </script>
+  <script>
+  // ФИКС: сохранение входа в APK
+  (function() {
+    // Сохраняем метку времени последней активности
+    let lastActive = localStorage.getItem('last_active');
+    let lastUser = localStorage.getItem('last_user');
+    
+    // Если есть сохранённый пользователь, но Firebase его потерял — пробуем восстановить
+    if (lastUser && !currentUser) {
+      console.log('Обнаружен сохранённый пользователь, ждём Firebase...');
+      // Даём Firebase шанс восстановиться
+      setTimeout(() => {
+        if (!currentUser && lastUser) {
+          showNotification('Попробуйте войти ещё раз. Если проблема повторяется — переустановите приложение.');
+        }
+      }, 3000);
+    }
+    
+    // Обновляем активность каждые 30 секунд
+    setInterval(() => {
+      if (currentUser) {
+        localStorage.setItem('last_active', Date.now());
+        localStorage.setItem('last_user', currentUser.uid);
+      }
+    }, 30000);
+    
+    // При загрузке проверяем, не слишком ли давно был вход
+    if (lastActive && (Date.now() - lastActive) > 1000 * 60 * 60 * 12) {
+      console.log('Прошло много времени с последней активности');
+    }
+  })();
+</script>
 </body>
 </html>
