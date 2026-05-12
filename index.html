@@ -99,6 +99,10 @@
       background: #e08e6a;
       color: white;
     }
+    #resetMyDataBtn {
+      background: #f44336;
+      color: white;
+    }
 
     /* Экран входа — кнопка по центру */
     .login-overlay {
@@ -601,6 +605,7 @@
     <h3>⚙️ Меню</h3>
     <p><strong>👤 Аккаунт:</strong> <span id="modalUserEmail"></span></p>
     <button id="logoutFromModalBtn">🚪 Выйти из аккаунта</button>
+    <button id="resetMyDataBtn">♻️ Начать сначала</button>
     <hr style="margin:15px 0; border-color:#eedbad;">
     <p><strong>📋 О программе</strong><br>Это приложение способствует эффективному выполнению и поддерживает мотивацию при реализации ваших запланированных задач.<br>Версия 1.0</p>
     <p><strong>💖 Помощь разработчику</strong><br><span id="devHelpPlaceholder">(пока пусто, скоро добавим)</span></p>
@@ -627,7 +632,7 @@
   };
   const ACHIEVEMENTS = [
     { days: 7, icon: "🌿", message: "🎉 7 дней подряд! Ты молодец! Можешь порадовать себя любимой вкусняшкой 🍰" },
-    { days: 15, icon: "🌸", message: "🌟 15 дней подряд! Отличная дисциплина! Купи себе бесполезную, но давно желанную вещь ну или сходи в кино 🎬" },
+    { days: 15, icon: "🌸", message: "🌟 15 дней подряд! Отличная дисциплина! Купи себе может не нужную, но давно желанную вещь, ну или сходи в кино 🎬" },
     { days: 30, icon: "🏆", message: "🏆 30 дней подряд! Ты огонь! Заслужил ужин в любимом ресторане 🍽️" },
     { days: 60, icon: "💎", message: "💎 60 дней подряд! Вау! Побалуй себя новым гаджетом или крутой вещью 📱" },
     { days: 180, icon: "👑", message: "👑 Полгода подряд! Ты легенда! Порадуй себя чем-то особенным — ты это заслужил! 🎁" },
@@ -890,6 +895,36 @@
   document.getElementById('logoutFromModalBtn').onclick = async () => { await auth.signOut(); modal.classList.remove('open'); };
   document.getElementById('settingsBtn').onclick = () => { modalUserEmail.innerText = currentUser?.email || '—'; modal.classList.add('open'); };
   document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('open');
+
+  // Сброс ВСЕХ данных текущего пользователя
+  document.getElementById('resetMyDataBtn')?.addEventListener('click', async () => {
+    if (!currentUser) return;
+    const confirm = window.confirm('❌ ВНИМАНИЕ! Это удалит ВСЕ твои задачи, дейлики и счётчик подряд. Отменить будет нельзя. Продолжить?');
+    if (!confirm) return;
+    
+    currentData = {
+      mainTasks: [],
+      dailySubtasks: [],
+      streakDays: 0,
+      lastCompletedDate: null,
+      lastAchievementNotified: 0
+    };
+    
+    await db.collection('users').doc(currentUser.uid).set({
+      email: currentUser.email,
+      mainTasks: [],
+      dailySubtasks: [],
+      streakDays: 0,
+      lastCompletedDate: null,
+      lastAchievementNotified: 0,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    renderAll();
+    updateFooterStreak();
+    showNotification('✅ Все данные сброшены. Начни с чистого листа!');
+    modal.classList.remove('open');
+  });
 
   auth.onAuthStateChanged(async user => {
     if (!user) { loginOverlay.style.display = 'flex'; appDiv.style.display = 'none'; return; }
