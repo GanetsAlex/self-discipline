@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Самодисциплина · Задачи и Дейлики</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/ios/180.png">
@@ -11,7 +12,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { background: #e2d9c9; font-family: 'Bad Script', 'Segoe UI', cursive; padding: 14px; }
-  @import url('https://fonts.googleapis.com/css2?family=Bad+Script&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bad+Script&display=swap');
     .app { max-width: 620px; margin: 0 auto; background: #fffdf5; border-radius: 48px 32px 56px 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2); overflow: hidden; position: relative; }
     .settings-btn { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #b48a4b; z-index: 10; transition: transform 0.2s; }
     .settings-btn:active { transform: rotate(30deg); }
@@ -92,74 +93,20 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-
-<div id="loadingScreen" class="loading-overlay" style="display: flex;">
-  <div class="loading-card">
-    <h2>⏳ Загрузка...</h2>
-  </div>
-</div>
-
-<div id="loginOverlay" class="login-overlay" style="display: none;">
-  <div class="login-card">
-    <h2>📋 Самодисциплина</h2>
-    <p style="margin: 15px 0;">Войдите через Google, чтобы сохранять прогресс</p>
-    <button id="googleLoginBtn" class="google-btn">📧 Войти через Google</button>
-  </div>
-</div>
-
+<div id="loadingScreen" class="loading-overlay" style="display: flex;"><div class="loading-card"><h2>⏳ Загрузка...</h2></div></div>
+<div id="loginOverlay" class="login-overlay" style="display: none;"><div class="login-card"><h2>📋 Самодисциплина</h2><p style="margin: 15px 0;">Войдите через Google, чтобы сохранять прогресс</p><button id="googleLoginBtn" class="google-btn">📧 Войти через Google</button></div></div>
 <div class="app" id="app" style="display: none;">
   <button class="settings-btn" id="settingsBtn">⚙️</button>
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="active">📋 Задачи</button>
-    <button class="tab-btn" data-tab="completed">📆 Архив</button>
-  </div>
+  <div class="tabs"><button class="tab-btn active" data-tab="active">📋 Задачи</button><button class="tab-btn" data-tab="completed">📆 Архив</button></div>
   <div id="activePage" class="page active-page">
-    <div class="add-task">
-      <input type="text" id="mainTaskInput" placeholder="Напишите задание..." autocomplete="off">
-      <button id="addMainBtn">+</button>
-    </div>
-    <div class="daily-global">
-      <div class="daily-global-header" id="dailyHeader">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="color:#3a86ff; font-weight:bold;">!</span>
-          <span class="daily-label">Дейлики<span class="tooltip-text">📌 Ежедневные задания</span></span>
-        </div>
-        <span class="daily-progress-badge" id="dailyProgressBadge">0/0</span>
-      </div>
-      <ul class="daily-list" id="dailyList"></ul>
-      <div class="add-daily" id="addDailyContainer" style="display:none;">
-        <input type="text" id="newDailyInput" placeholder="новая подзадача...">
-        <button id="addDailyBtn">+</button>
-      </div>
-    </div>
+    <div class="add-task"><input type="text" id="mainTaskInput" placeholder="Напишите задание..." autocomplete="off"><button id="addMainBtn">+</button></div>
+    <div class="daily-global"><div class="daily-global-header" id="dailyHeader"><div style="display: flex; align-items: center; gap: 8px;"><span style="color:#3a86ff; font-weight:bold;">!</span><span class="daily-label">Дейлики<span class="tooltip-text">📌 Ежедневные задания</span></span></div><span class="daily-progress-badge" id="dailyProgressBadge">0/0</span></div><ul class="daily-list" id="dailyList"></ul><div class="add-daily" id="addDailyContainer" style="display:none;"><input type="text" id="newDailyInput" placeholder="новая подзадача..."><button id="addDailyBtn">+</button></div></div>
     <ul id="activeList" class="task-list"></ul>
   </div>
-  <div id="completedPage" class="page">
-    <div id="completedGroupsContainer"></div>
-  </div>
-  <div class="footer-streak">
-    <div class="tooltip-footer">
-      <span class="streak-icon">🔥</span>
-      <span class="streak-days" id="footerStreakDays">0</span>
-      <span>подряд</span>
-      <span class="tooltip-text">🏆 Получай награду за определённое количество последовательных дней активности. Для увеличения счётчика выполняй все ежедневные задания и хотя бы одно обычное задание каждый день.</span>
-    </div>
-  </div>
+  <div id="completedPage" class="page"><div id="completedGroupsContainer"></div></div>
+  <div class="footer-streak"><div class="tooltip-footer"><span class="streak-icon">🔥</span><span class="streak-days" id="footerStreakDays">0</span><span>подряд</span><span class="tooltip-text">🏆 Получай награду за определённое количество последовательных дней активности. Для увеличения счётчика выполняй все ежедневные задания и хотя бы одно обычное задание каждый день.</span></div></div>
 </div>
-
-<div id="settingsModal" class="modal-overlay">
-  <div class="modal-card">
-    <h3>⚙️ Меню</h3>
-    <p><strong>👤 Аккаунт:</strong> <span id="modalUserEmail"></span></p>
-    <button id="logoutFromModalBtn">🚪 Выйти из аккаунта</button>
-    <button id="resetMyDataBtn">♻️ Начать сначала</button>
-    <hr style="margin:15px 0; border-color:#eedbad;">
-    <p><strong>📋 О программе</strong><br>Это приложение способствует эффективному выполнению и поддерживает мотивацию при реализации ваших запланированных задач.<br>Версия 1.0</p>
-    <p><strong>💖 Помощь разработчику</strong><br><span id="devHelpPlaceholder">(пока пусто, скоро добавим)</span></p>
-    <button class="close-modal" id="closeModalBtn">Закрыть</button>
-  </div>
-</div>
-
+<div id="settingsModal" class="modal-overlay"><div class="modal-card"><h3>⚙️ Меню</h3><p><strong>👤 Аккаунт:</strong> <span id="modalUserEmail"></span></p><button id="logoutFromModalBtn">🚪 Выйти из аккаунта</button><button id="resetMyDataBtn">♻️ Начать сначала</button><hr style="margin:15px 0; border-color:#eedbad;"><p><strong>📋 О программе</strong><br>Это приложение способствует эффективному выполнению и поддерживает мотивацию при реализации ваших запланированных задач.<br>Версия 1.0</p><p><strong>💖 Помощь разработчику</strong><br><span id="devHelpPlaceholder">(пока пусто, скоро добавим)</span></p><button class="close-modal" id="closeModalBtn">Закрыть</button></div></div>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAHYG7vhz3PJkK5uEx_mI4j5ZBSXizbBtU",
@@ -174,10 +121,7 @@
   const db = firebase.firestore();
 
   let currentUser = null;
-  let currentData = {
-    mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0
-  };
-  
+  let currentData = { mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0 };
   const ACHIEVEMENTS = [
     { days: 7, icon: "🌿", message: "🎉 7 дней подряд! Ты молодец! Можешь порадовать себя любимой вкусняшкой 🍰" },
     { days: 15, icon: "🌸", message: "🌟 15 дней подряд! Отличная дисциплина! Купи себе может не нужную, но давно желанную вещь, ну или сходи в кино 🎬" },
@@ -187,319 +131,35 @@
     { days: 365, icon: "🌟", message: "🎊 ГОД подряд! Невероятно! Ты абсолютный чемпион! Устрой настоящий праздник! 🎉🎂" }
   ];
 
-  function showNotification(msg) {
-    let d = document.createElement('div');
-    d.textContent = msg;
-    d.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#4caf50; color:white; padding:12px 20px; border-radius:50px; z-index:2000; font-family:Bad Script;';
-    document.body.appendChild(d);
-    setTimeout(() => d.remove(), 4000);
-  }
-
-  function updateFooterStreak() {
-    let daysSpan = document.getElementById('footerStreakDays');
-    if (daysSpan) daysSpan.textContent = currentData.streakDays;
-    let icon = '🔥';
-    for (let a of ACHIEVEMENTS) if (currentData.streakDays >= a.days) icon = a.icon;
-    let iconSpan = document.querySelector('.footer-streak .streak-icon');
-    if (iconSpan) iconSpan.textContent = icon;
-    for (let a of ACHIEVEMENTS) if (currentData.streakDays >= a.days && currentData.lastAchievementNotified < a.days) {
-      showNotification(a.message);
-      currentData.lastAchievementNotified = a.days;
-      saveToFirestore();
-    }
-  }
-
-  async function saveToFirestore() {
-    if (!currentUser) return;
-    await db.collection('users').doc(currentUser.uid).set({
-      email: currentUser.email,
-      mainTasks: currentData.mainTasks,
-      dailySubtasks: currentData.dailySubtasks,
-      streakDays: currentData.streakDays,
-      lastCompletedDate: currentData.lastCompletedDate,
-      lastAchievementNotified: currentData.lastAchievementNotified,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-  }
-
-  async function loadFromFirestore() {
-    if (!currentUser) return;
-    const doc = await db.collection('users').doc(currentUser.uid).get();
-    if (doc.exists) {
-      let d = doc.data();
-      currentData.mainTasks = d.mainTasks || [];
-      currentData.dailySubtasks = d.dailySubtasks || [];
-      currentData.streakDays = d.streakDays || 0;
-      currentData.lastCompletedDate = d.lastCompletedDate || null;
-      currentData.lastAchievementNotified = d.lastAchievementNotified || 0;
-    } else {
-      currentData = { mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0 };
-    }
-    checkAndResetDaily();
-    renderAll();
-    updateFooterStreak();
-  }
-
-  function checkAndResetDaily() {
-    let today = new Date().toDateString();
-    let lastReset = localStorage.getItem("daily_last_reset_" + (currentUser?.uid || "temp"));
-    if (lastReset !== today) {
-      if (currentData.dailySubtasks.length) {
-        let wasAll = currentData.dailySubtasks.every(s => s.done);
-        for (let s of currentData.dailySubtasks) s.done = false;
-        if (!wasAll && lastReset) { currentData.streakDays = 0; currentData.lastCompletedDate = null; }
-        saveToFirestore();
-        updateFooterStreak();
-      }
-      localStorage.setItem("daily_last_reset_" + (currentUser?.uid || "temp"), today);
-    }
-  }
-
-  async function checkAndUpdateStreak() {
-    let today = new Date().toDateString();
-    let allDailies = currentData.dailySubtasks.length && currentData.dailySubtasks.every(s => s.done);
-    let todayTask = currentData.mainTasks.some(t => t.status === "completed" && t.completedAt && new Date(t.completedAt).toDateString() === today);
-    if (allDailies && todayTask) {
-      if (!currentData.lastCompletedDate || new Date(currentData.lastCompletedDate).toDateString() !== today) {
-        if (currentData.lastCompletedDate) {
-          let diff = Math.floor((new Date() - new Date(currentData.lastCompletedDate)) / (24*3600000));
-          currentData.streakDays = (diff === 1) ? currentData.streakDays + 1 : 1;
-        } else currentData.streakDays = 1;
-        currentData.lastCompletedDate = new Date().toISOString();
-        await saveToFirestore();
-        updateFooterStreak();
-      }
-    } else if (currentData.lastCompletedDate) {
-      let diff = Math.floor((new Date() - new Date(currentData.lastCompletedDate)) / (24*3600000));
-      if (diff > 1) { currentData.streakDays = 0; currentData.lastCompletedDate = null; await saveToFirestore(); updateFooterStreak(); }
-    }
-  }
-
-  function addMainTask(text) {
-    if (!text.trim()) return;
-    currentData.mainTasks.push({ id: Date.now(), text: text.trim(), createdAt: new Date().toISOString(), completedAt: null, status: "active" });
-    saveToFirestore();
-    renderActive();
-  }
-
-  async function completeMainTask(id, el) {
-    let t = currentData.mainTasks.find(t => t.id == id);
-    if (!t || t.status === "completed") return;
-    let span = el.querySelector('.task-text');
-    if (span) span.classList.add('striked-red');
-    el.classList.add('completing');
-    await new Promise(r => setTimeout(r, 270));
-    t.status = "completed";
-    t.completedAt = new Date().toISOString();
-    saveToFirestore();
-    renderActive();
-    renderCompletedArchive();
-    await checkAndUpdateStreak();
-  }
-
-  function revertMainTask(id) {
-    let t = currentData.mainTasks.find(t => t.id == id);
-    if (t && t.status === "completed") {
-      t.status = "active";
-      t.completedAt = null;
-      saveToFirestore();
-      renderActive();
-      renderCompletedArchive();
-    }
-  }
-
-  function addDailyTask(text) {
-    if (!text.trim()) return;
-    currentData.dailySubtasks.push({ id: Date.now(), text: text.trim(), done: false });
-    saveToFirestore();
-    renderDailyBlock();
-  }
-
-  function deleteDailyTask(id) {
-    currentData.dailySubtasks = currentData.dailySubtasks.filter(s => s.id !== id);
-    saveToFirestore();
-    renderDailyBlock();
-    renderActive();
-  }
-
-  function renderActive() {
-    let cont = document.getElementById('activeList');
-    let active = currentData.mainTasks.filter(t => t.status === "active");
-    if (!active.length) { cont.innerHTML = '<li class="empty-msg">✨ Нет активных задач, добавьте сверху</li>'; return; }
-    cont.innerHTML = '';
-    active.forEach((t, idx) => {
-      let li = document.createElement('li');
-      li.className = 'task-item';
-      li.innerHTML = `
-        <div class="task-main-row"><div class="task-left"><span class="task-number">${idx+1}.</span><span class="task-text">${escapeHtml(t.text)}</span></div><span class="swipe-hint">↜</span></div>
-        <div class="task-meta"><span class="calendar-badge">📅<div class="tooltip-custom">➕ Добавлено: ${new Date(t.createdAt).toLocaleString()}<br>⏳ Активно</div></span><span>${new Date(t.createdAt).toLocaleDateString()}</span></div>
-      `;
-      attachSwipe(li, t.id);
-      cont.appendChild(li);
-    });
-  }
-
-  function renderDailyBlock() {
-    let cont = document.getElementById('dailyList');
-    let badge = document.getElementById('dailyProgressBadge');
-    let done = currentData.dailySubtasks.filter(s => s.done).length;
-    badge.innerText = `${done}/${currentData.dailySubtasks.length}`;
-    let header = document.getElementById('dailyHeader');
-    if (currentData.dailySubtasks.length && done === currentData.dailySubtasks.length) header.classList.add('green');
-    else header.classList.remove('green');
-    if (!currentData.dailySubtasks.length) { cont.innerHTML = '<div style="padding:12px;text-align:center;">✨ Нет дейликов</div>'; return; }
-    cont.innerHTML = '';
-    currentData.dailySubtasks.forEach(s => {
-      let li = document.createElement('li');
-      li.className = 'daily-subtask';
-      let cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.checked = s.done;
-      cb.onchange = async () => {
-        s.done = !s.done;
-        saveToFirestore();
-        renderDailyBlock();
-        await checkAndUpdateStreak();
-      };
-      let span = document.createElement('span');
-      span.innerText = s.text;
-      if (s.done) span.classList.add('completed');
-      let del = document.createElement('button');
-      del.innerHTML = '✕';
-      del.className = 'delete-daily-btn';
-      del.onclick = () => deleteDailyTask(s.id);
-      li.appendChild(cb); li.appendChild(span); li.appendChild(del);
-      cont.appendChild(li);
-    });
-  }
-
-  function renderCompletedArchive() {
-    let cont = document.getElementById('completedGroupsContainer');
-    let completed = currentData.mainTasks.filter(t => t.status === "completed");
-    if (!completed.length) { cont.innerHTML = '<div class="empty-msg">📭 Нет завершённых заданий</div>'; return; }
-    let groups = new Map();
-    for (let t of completed) {
-      let d = new Date(t.completedAt);
-      let monthKey = `${d.getFullYear()}-${d.getMonth()}`;
-      let monthName = d.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
-      let dayKey = d.toISOString().slice(0,10);
-      let dayTitle = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-      if (!groups.has(monthKey)) groups.set(monthKey, { monthName, days: new Map() });
-      let m = groups.get(monthKey);
-      if (!m.days.has(dayKey)) m.days.set(dayKey, { dayTitle, tasks: [] });
-      m.days.get(dayKey).tasks.push(t);
-    }
-    cont.innerHTML = '';
-    for (let [_, { monthName, days }] of Array.from(groups.entries()).sort((a,b)=>b[0].localeCompare(a[0]))) {
-      let monthDiv = document.createElement('div'); monthDiv.className = 'completed-group';
-      let monthHead = document.createElement('div'); monthHead.className = 'month-header';
-      monthHead.innerHTML = `<span>📅 ${monthName}</span><span class="toggle-icon">▼</span>`;
-      let monthCont = document.createElement('div'); monthCont.className = 'month-content open';
-      monthHead.onclick = () => { monthCont.classList.toggle('open'); monthHead.querySelector('.toggle-icon').innerText = monthCont.classList.contains('open') ? '▼' : '▶'; };
-      for (let [_, { dayTitle, tasks }] of Array.from(days.entries()).sort((a,b)=>b[0].localeCompare(a[0]))) {
-        let dayDiv = document.createElement('div'); dayDiv.className = 'day-group';
-        let dayHead = document.createElement('div'); dayHead.className = 'day-header';
-        dayHead.innerHTML = `<span>✨ ${dayTitle}</span><span class="toggle-icon">▼</span>`;
-        let dayCont = document.createElement('div'); dayCont.className = 'day-tasks open';
-        dayHead.onclick = () => { dayCont.classList.toggle('open'); dayHead.querySelector('.toggle-icon').innerText = dayCont.classList.contains('open') ? '▼' : '▶'; };
-        for (let t of tasks) {
-          let td = document.createElement('div'); td.className = 'completed-item';
-          td.innerHTML = `<span class="task-text-archive">✘ ${t.text}</span><button class="revert-task-btn" data-id="${t.id}">↺ вернуть</button>`;
-          dayCont.appendChild(td);
-        }
-        dayDiv.appendChild(dayHead); dayDiv.appendChild(dayCont);
-        monthCont.appendChild(dayDiv);
-      }
-      monthDiv.appendChild(monthHead); monthDiv.appendChild(monthCont);
-      cont.appendChild(monthDiv);
-    }
-    document.querySelectorAll('.revert-task-btn').forEach(btn => btn.onclick = () => revertMainTask(parseInt(btn.dataset.id)));
-  }
-
-  function attachSwipe(el, id) {
-    let startX = 0;
-    el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
-    el.addEventListener('touchend', e => { let delta = e.changedTouches[0].clientX - startX; if (Math.abs(delta) > 55) completeMainTask(id, el); });
-    let mouseDown = false, mouseStart = 0;
-    el.addEventListener('mousedown', e => { if (e.button !== 0) return; mouseDown = true; mouseStart = e.clientX; el.style.transition = 'none'; });
-    document.addEventListener('mousemove', e => { if (mouseDown) { let dx = e.clientX - mouseStart; if (Math.abs(dx) > 15) el.style.transform = `translateX(${dx*0.2}px)`; } });
-    document.addEventListener('mouseup', e => { if (mouseDown) { let dx = e.clientX - mouseStart; if (Math.abs(dx) > 50) completeMainTask(id, el); el.style.transform = ''; mouseDown = false; } });
-  }
-
+  function showNotification(msg) { let d = document.createElement('div'); d.textContent = msg; d.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#4caf50; color:white; padding:12px 20px; border-radius:50px; z-index:2000; font-family:Bad Script;'; document.body.appendChild(d); setTimeout(() => d.remove(), 4000); }
+  function updateFooterStreak() { let daysSpan = document.getElementById('footerStreakDays'); if (daysSpan) daysSpan.textContent = currentData.streakDays; let icon = '🔥'; for (let a of ACHIEVEMENTS) if (currentData.streakDays >= a.days) icon = a.icon; let iconSpan = document.querySelector('.footer-streak .streak-icon'); if (iconSpan) iconSpan.textContent = icon; for (let a of ACHIEVEMENTS) if (currentData.streakDays >= a.days && currentData.lastAchievementNotified < a.days) { showNotification(a.message); currentData.lastAchievementNotified = a.days; saveToFirestore(); } }
+  async function saveToFirestore() { if (!currentUser) return; await db.collection('users').doc(currentUser.uid).set({ email: currentUser.email, mainTasks: currentData.mainTasks, dailySubtasks: currentData.dailySubtasks, streakDays: currentData.streakDays, lastCompletedDate: currentData.lastCompletedDate, lastAchievementNotified: currentData.lastAchievementNotified, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }); }
+  async function loadFromFirestore() { if (!currentUser) return; const doc = await db.collection('users').doc(currentUser.uid).get(); if (doc.exists) { let d = doc.data(); currentData.mainTasks = d.mainTasks || []; currentData.dailySubtasks = d.dailySubtasks || []; currentData.streakDays = d.streakDays || 0; currentData.lastCompletedDate = d.lastCompletedDate || null; currentData.lastAchievementNotified = d.lastAchievementNotified || 0; } else { currentData = { mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0 }; } checkAndResetDaily(); renderAll(); updateFooterStreak(); }
+  function checkAndResetDaily() { let today = new Date().toDateString(); let lastReset = localStorage.getItem("daily_last_reset_" + (currentUser?.uid || "temp")); if (lastReset !== today) { if (currentData.dailySubtasks.length) { let wasAll = currentData.dailySubtasks.every(s => s.done); for (let s of currentData.dailySubtasks) s.done = false; if (!wasAll && lastReset) { currentData.streakDays = 0; currentData.lastCompletedDate = null; } saveToFirestore(); updateFooterStreak(); } localStorage.setItem("daily_last_reset_" + (currentUser?.uid || "temp"), today); } }
+  async function checkAndUpdateStreak() { let today = new Date().toDateString(); let allDailies = currentData.dailySubtasks.length && currentData.dailySubtasks.every(s => s.done); let todayTask = currentData.mainTasks.some(t => t.status === "completed" && t.completedAt && new Date(t.completedAt).toDateString() === today); if (allDailies && todayTask) { if (!currentData.lastCompletedDate || new Date(currentData.lastCompletedDate).toDateString() !== today) { if (currentData.lastCompletedDate) { let diff = Math.floor((new Date() - new Date(currentData.lastCompletedDate)) / (24*3600000)); currentData.streakDays = (diff === 1) ? currentData.streakDays + 1 : 1; } else currentData.streakDays = 1; currentData.lastCompletedDate = new Date().toISOString(); await saveToFirestore(); updateFooterStreak(); } } else if (currentData.lastCompletedDate) { let diff = Math.floor((new Date() - new Date(currentData.lastCompletedDate)) / (24*3600000)); if (diff > 1) { currentData.streakDays = 0; currentData.lastCompletedDate = null; await saveToFirestore(); updateFooterStreak(); } } }
+  function addMainTask(text) { if (!text.trim()) return; currentData.mainTasks.push({ id: Date.now(), text: text.trim(), createdAt: new Date().toISOString(), completedAt: null, status: "active" }); saveToFirestore(); renderActive(); }
+  async function completeMainTask(id, el) { let t = currentData.mainTasks.find(t => t.id == id); if (!t || t.status === "completed") return; let span = el.querySelector('.task-text'); if (span) span.classList.add('striked-red'); el.classList.add('completing'); await new Promise(r => setTimeout(r, 270)); t.status = "completed"; t.completedAt = new Date().toISOString(); saveToFirestore(); renderActive(); renderCompletedArchive(); await checkAndUpdateStreak(); }
+  function revertMainTask(id) { let t = currentData.mainTasks.find(t => t.id == id); if (t && t.status === "completed") { t.status = "active"; t.completedAt = null; saveToFirestore(); renderActive(); renderCompletedArchive(); } }
+  function addDailyTask(text) { if (!text.trim()) return; currentData.dailySubtasks.push({ id: Date.now(), text: text.trim(), done: false }); saveToFirestore(); renderDailyBlock(); }
+  function deleteDailyTask(id) { currentData.dailySubtasks = currentData.dailySubtasks.filter(s => s.id !== id); saveToFirestore(); renderDailyBlock(); renderActive(); }
+  function renderActive() { let cont = document.getElementById('activeList'); let active = currentData.mainTasks.filter(t => t.status === "active"); if (!active.length) { cont.innerHTML = '<li class="empty-msg">✨ Нет активных задач, добавьте сверху</li>'; return; } cont.innerHTML = ''; active.forEach((t, idx) => { let li = document.createElement('li'); li.className = 'task-item'; li.innerHTML = `<div class="task-main-row"><div class="task-left"><span class="task-number">${idx+1}.</span><span class="task-text">${escapeHtml(t.text)}</span></div><span class="swipe-hint">↜</span></div><div class="task-meta"><span class="calendar-badge">📅<div class="tooltip-custom">➕ Добавлено: ${new Date(t.createdAt).toLocaleString()}<br>⏳ Активно</div></span><span>${new Date(t.createdAt).toLocaleDateString()}</span></div>`; attachSwipe(li, t.id); cont.appendChild(li); }); }
+  function renderDailyBlock() { let cont = document.getElementById('dailyList'); let badge = document.getElementById('dailyProgressBadge'); let done = currentData.dailySubtasks.filter(s => s.done).length; badge.innerText = `${done}/${currentData.dailySubtasks.length}`; let header = document.getElementById('dailyHeader'); if (currentData.dailySubtasks.length && done === currentData.dailySubtasks.length) header.classList.add('green'); else header.classList.remove('green'); if (!currentData.dailySubtasks.length) { cont.innerHTML = '<div style="padding:12px;text-align:center;">✨ Нет дейликов</div>'; return; } cont.innerHTML = ''; currentData.dailySubtasks.forEach(s => { let li = document.createElement('li'); li.className = 'daily-subtask'; let cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = s.done; cb.onchange = async () => { s.done = !s.done; saveToFirestore(); renderDailyBlock(); await checkAndUpdateStreak(); }; let span = document.createElement('span'); span.innerText = s.text; if (s.done) span.classList.add('completed'); let del = document.createElement('button'); del.innerHTML = '✕'; del.className = 'delete-daily-btn'; del.onclick = () => deleteDailyTask(s.id); li.appendChild(cb); li.appendChild(span); li.appendChild(del); cont.appendChild(li); }); }
+  function renderCompletedArchive() { let cont = document.getElementById('completedGroupsContainer'); let completed = currentData.mainTasks.filter(t => t.status === "completed"); if (!completed.length) { cont.innerHTML = '<div class="empty-msg">📭 Нет завершённых заданий</div>'; return; } let groups = new Map(); for (let t of completed) { let d = new Date(t.completedAt); let monthKey = `${d.getFullYear()}-${d.getMonth()}`; let monthName = d.toLocaleString('ru-RU', { month: 'long', year: 'numeric' }); let dayKey = d.toISOString().slice(0,10); let dayTitle = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }); if (!groups.has(monthKey)) groups.set(monthKey, { monthName, days: new Map() }); let m = groups.get(monthKey); if (!m.days.has(dayKey)) m.days.set(dayKey, { dayTitle, tasks: [] }); m.days.get(dayKey).tasks.push(t); } cont.innerHTML = ''; for (let [_, { monthName, days }] of Array.from(groups.entries()).sort((a,b)=>b[0].localeCompare(a[0]))) { let monthDiv = document.createElement('div'); monthDiv.className = 'completed-group'; let monthHead = document.createElement('div'); monthHead.className = 'month-header'; monthHead.innerHTML = `<span>📅 ${monthName}</span><span class="toggle-icon">▼</span>`; let monthCont = document.createElement('div'); monthCont.className = 'month-content open'; monthHead.onclick = () => { monthCont.classList.toggle('open'); monthHead.querySelector('.toggle-icon').innerText = monthCont.classList.contains('open') ? '▼' : '▶'; }; for (let [_, { dayTitle, tasks }] of Array.from(days.entries()).sort((a,b)=>b[0].localeCompare(a[0]))) { let dayDiv = document.createElement('div'); dayDiv.className = 'day-group'; let dayHead = document.createElement('div'); dayHead.className = 'day-header'; dayHead.innerHTML = `<span>✨ ${dayTitle}</span><span class="toggle-icon">▼</span>`; let dayCont = document.createElement('div'); dayCont.className = 'day-tasks open'; dayHead.onclick = () => { dayCont.classList.toggle('open'); dayHead.querySelector('.toggle-icon').innerText = dayCont.classList.contains('open') ? '▼' : '▶'; }; for (let t of tasks) { let td = document.createElement('div'); td.className = 'completed-item'; td.innerHTML = `<span class="task-text-archive">✘ ${t.text}</span><button class="revert-task-btn" data-id="${t.id}">↺ вернуть</button>`; dayCont.appendChild(td); } dayDiv.appendChild(dayHead); dayDiv.appendChild(dayCont); monthCont.appendChild(dayDiv); } monthDiv.appendChild(monthHead); monthDiv.appendChild(monthCont); cont.appendChild(monthDiv); } document.querySelectorAll('.revert-task-btn').forEach(btn => btn.onclick = () => revertMainTask(parseInt(btn.dataset.id))); }
+  function attachSwipe(el, id) { let startX = 0; el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }); el.addEventListener('touchend', e => { let delta = e.changedTouches[0].clientX - startX; if (Math.abs(delta) > 55) completeMainTask(id, el); }); let mouseDown = false, mouseStart = 0; el.addEventListener('mousedown', e => { if (e.button !== 0) return; mouseDown = true; mouseStart = e.clientX; el.style.transition = 'none'; }); document.addEventListener('mousemove', e => { if (mouseDown) { let dx = e.clientX - mouseStart; if (Math.abs(dx) > 15) el.style.transform = `translateX(${dx*0.2}px)`; } }); document.addEventListener('mouseup', e => { if (mouseDown) { let dx = e.clientX - mouseStart; if (Math.abs(dx) > 50) completeMainTask(id, el); el.style.transform = ''; mouseDown = false; } }); }
   function renderAll() { renderActive(); renderDailyBlock(); renderCompletedArchive(); updateFooterStreak(); }
   function escapeHtml(str) { let d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-
-  // DOM элементы
-  const loadingScreen = document.getElementById('loadingScreen');
-  const loginOverlay = document.getElementById('loginOverlay');
-  const appDiv = document.getElementById('app');
-  const modal = document.getElementById('settingsModal');
-  const modalUserEmail = document.getElementById('modalUserEmail');
-
-  // Обработчики кнопок
-  document.getElementById('googleLoginBtn').onclick = async () => {
-    let provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
-    try { await auth.signInWithPopup(provider); } catch(e) { showNotification('Ошибка входа: ' + e.message); }
-  };
+  const loadingScreen = document.getElementById('loadingScreen'); const loginOverlay = document.getElementById('loginOverlay'); const appDiv = document.getElementById('app'); const modal = document.getElementById('settingsModal'); const modalUserEmail = document.getElementById('modalUserEmail');
+  document.getElementById('googleLoginBtn').onclick = async () => { let provider = new firebase.auth.GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' }); try { await auth.signInWithPopup(provider); } catch(e) { showNotification('Ошибка входа: ' + e.message); } };
   document.getElementById('logoutFromModalBtn').onclick = async () => { await auth.signOut(); modal.classList.remove('open'); };
   document.getElementById('settingsBtn').onclick = () => { if (currentUser) modalUserEmail.innerText = currentUser.email; modal.classList.add('open'); };
   document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('open');
-
-  document.getElementById('resetMyDataBtn')?.addEventListener('click', async () => {
-    if (!currentUser) return;
-    const confirm = window.confirm('❌ ВНИМАНИЕ! Это удалит ВСЕ твои задачи, дейлики и счётчик подряд. Отменить будет нельзя. Продолжить?');
-    if (!confirm) return;
-    currentData = { mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0 };
-    await db.collection('users').doc(currentUser.uid).set({
-      email: currentUser.email,
-      mainTasks: [],
-      dailySubtasks: [],
-      streakDays: 0,
-      lastCompletedDate: null,
-      lastAchievementNotified: 0,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    renderAll();
-    updateFooterStreak();
-    showNotification('✅ Все данные сброшены. Начни с чистого листа!');
-    modal.classList.remove('open');
-  });
-
+  document.getElementById('resetMyDataBtn')?.addEventListener('click', async () => { if (!currentUser) return; const confirm = window.confirm('❌ ВНИМАНИЕ! Это удалит ВСЕ твои задачи, дейлики и счётчик подряд. Отменить будет нельзя. Продолжить?'); if (!confirm) return; currentData = { mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0 }; await db.collection('users').doc(currentUser.uid).set({ email: currentUser.email, mainTasks: [], dailySubtasks: [], streakDays: 0, lastCompletedDate: null, lastAchievementNotified: 0, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }); renderAll(); updateFooterStreak(); showNotification('✅ Все данные сброшены. Начни с чистого листа!'); modal.classList.remove('open'); });
   document.getElementById('addMainBtn').onclick = () => { addMainTask(document.getElementById('mainTaskInput').value); document.getElementById('mainTaskInput').value = ''; };
   document.getElementById('addDailyBtn').onclick = () => { addDailyTask(document.getElementById('newDailyInput').value); document.getElementById('newDailyInput').value = ''; };
   document.getElementById('dailyHeader').onclick = () => { let l = document.getElementById('dailyList'); let a = document.getElementById('addDailyContainer'); l.classList.toggle('open'); a.style.display = l.classList.contains('open') ? 'flex' : 'none'; };
-  
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.onclick = () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('activePage').classList.toggle('active-page', btn.dataset.tab === 'active');
-    document.getElementById('completedPage').classList.toggle('active-page', btn.dataset.tab === 'completed');
-    if (btn.dataset.tab === 'completed') renderCompletedArchive();
-  });
-
-  // Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('SW зарегистрирован:', reg))
-      .catch(err => console.error('SW регистрация ошибка:', err));
-  }
-
-  // АВТОРИЗАЦИЯ — без лишних уведомлений
-  auth.onAuthStateChanged(async user => {
-    // Скрываем экран загрузки
-    if (loadingScreen) loadingScreen.style.display = 'none';
-    
-    if (user) {
-      currentUser = user;
-      loginOverlay.style.display = 'none';
-      appDiv.style.display = 'block';
-      await loadFromFirestore();
-    } else {
-      loginOverlay.style.display = 'flex';
-      appDiv.style.display = 'none';
-    }
-  });
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.onclick = () => { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.getElementById('activePage').classList.toggle('active-page', btn.dataset.tab === 'active'); document.getElementById('completedPage').classList.toggle('active-page', btn.dataset.tab === 'completed'); if (btn.dataset.tab === 'completed') renderCompletedArchive(); });
+  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW зарегистрирован:', reg)).catch(err => console.error('SW регистрация ошибка:', err)); }
+  auth.onAuthStateChanged(async user => { if (loadingScreen) loadingScreen.style.display = 'none'; if (user) { currentUser = user; loginOverlay.style.display = 'none'; appDiv.style.display = 'block'; await loadFromFirestore(); } else { loginOverlay.style.display = 'flex'; appDiv.style.display = 'none'; } });
 </script>
 </body>
 </html>
