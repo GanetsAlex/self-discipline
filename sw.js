@@ -1,49 +1,38 @@
-// Простой сервис-воркер для PWA
+// Сервис-воркер для PWA — стратегия "сначала сеть"
+const CACHE_NAME = 'self-discipline-v2';
 
-const CACHE_NAME = 'self-discipline-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
-
-// Устанавливаем сервис-воркер и кешируем файлы
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Кеш открыт');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
-
-// Отвечаем на запросы: сначала из кеша, потом с сервера
+// Отвечаем на запросы: сначала пробуем сеть, при ошибке — кеш
 self.addEventListener('fetch', event => {
+  // Для HTML-страниц — сначала сеть
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Обновляем кеш новой версией
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Для остальных файлов (css, js, иконки) — сначала кеш, потом сеть
   event.respondWith(
     caches.match(event.request)
-      .then(response => {
-        // Если файл есть в кеше — возвращаем его
-        if (response) {
-          return response;
-        }
-        // Иначе загружаем с сервера
-        return fetch(event.request);
-      })
+      .then(response => response || fetch(event.request))
   );
 });
 
-// Обновляем кеш при активации (удаляем старые версии)
+// При активации удаляем старые кеши
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then(keys => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Удаляем старый кеш:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
       );
     })
   );
