@@ -375,7 +375,6 @@
     mainRow.appendChild(leftDiv);
     mainRow.appendChild(swipeHint);
     
-    // 👇 БЛОК С КАЛЕНДАРИКОМ И КНОПКОЙ УДАЛЕНИЯ
     const metaDiv = document.createElement('div');
     metaDiv.className = 'task-meta';
     
@@ -395,17 +394,20 @@
     const shortDate = new Date(task.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
     dateShortSpan.innerText = shortDate;
     
-    // КНОПКА УДАЛЕНИЯ ЗАДАНИЯ
+    // КНОПКА УДАЛЕНИЯ
     const deleteBtn = document.createElement('button');
     deleteBtn.innerHTML = '🗑';
     deleteBtn.style.background = 'none';
     deleteBtn.style.border = 'none';
-    deleteBtn.style.fontSize = '1.2rem';
+    deleteBtn.style.fontSize = '1.1rem';
     deleteBtn.style.cursor = 'pointer';
     deleteBtn.style.color = '#e08e6a';
-    deleteBtn.style.padding = '0 4px';
+    deleteBtn.style.marginLeft = '8px';
     deleteBtn.title = 'Удалить задание';
-    deleteBtn.onclick = () => deleteMainTask(task.id);
+    deleteBtn.onclick = (e) => {
+      e.stopPropagation();
+      deleteMainTask(task.id);
+    };
     
     metaDiv.appendChild(calendarSpan);
     metaDiv.appendChild(dateShortSpan);
