@@ -313,6 +313,19 @@
     }
   }
 
+  function deleteMainTask(taskId) {
+  if (confirm('🗑 Удалить задание без возможности восстановления?')) {
+    const index = currentData.mainTasks.findIndex(t => t.id == taskId);
+    if (index !== -1) {
+      currentData.mainTasks.splice(index, 1);
+      saveAll();
+      renderActive();
+      renderCompletedArchive();
+      showNotification('✅ Задание удалено');
+    }
+  }
+}
+
   function addDailyTask(text) {
     if (!text.trim()) return;
     currentData.dailySubtasks.push({ id: Date.now(), text: text.trim(), done: false });
@@ -328,22 +341,83 @@
   }
 
   function renderActive() {
-    let cont = document.getElementById('activeList');
-    let active = currentData.mainTasks.filter(t => t.status === "active");
-    if (!active.length) { cont.innerHTML = '<li class="empty-msg">✨ Нет активных задач, добавьте сверху</li>'; return; }
-    cont.innerHTML = '';
-    active.forEach((t, idx) => {
-      let li = document.createElement('li');
-      li.className = 'task-item';
-      li.innerHTML = `
-        <div class="task-main-row"><div class="task-left"><span class="task-number">${idx+1}.</span><span class="task-text">${escapeHtml(t.text)}</span></div><span class="swipe-hint">↜</span></div>
-        <div class="task-meta"><span class="calendar-badge">📅<div class="tooltip-custom">➕ Добавлено: ${new Date(t.createdAt).toLocaleString()}<br>⏳ Активно</div></span><span>${new Date(t.createdAt).toLocaleDateString()}</span></div>
-      `;
-      attachSwipe(li, t.id);
-      cont.appendChild(li);
-    });
+  const container = document.getElementById("activeList");
+  const activeTasks = currentData.mainTasks.filter(t => t.status === "active");
+  if (activeTasks.length === 0) {
+    container.innerHTML = '<li class="empty-msg">✨ Нет активных задач, добавьте сверху</li>';
+    return;
   }
-
+  container.innerHTML = "";
+  activeTasks.forEach((task, idx) => {
+    const li = document.createElement('li');
+    li.className = 'task-item';
+    
+    const mainRow = document.createElement('div');
+    mainRow.className = 'task-main-row';
+    
+    const leftDiv = document.createElement('div');
+    leftDiv.className = 'task-left';
+    
+    const numSpan = document.createElement('span');
+    numSpan.className = 'task-number';
+    numSpan.innerText = (idx + 1) + '.';
+    
+    const textSpan = document.createElement('span');
+    textSpan.className = 'task-text';
+    textSpan.innerText = task.text;
+    
+    const swipeHint = document.createElement('span');
+    swipeHint.className = 'swipe-hint';
+    swipeHint.innerText = '↜';
+    
+    leftDiv.appendChild(numSpan);
+    leftDiv.appendChild(textSpan);
+    mainRow.appendChild(leftDiv);
+    mainRow.appendChild(swipeHint);
+    
+    // 👇 БЛОК С КАЛЕНДАРИКОМ И КНОПКОЙ УДАЛЕНИЯ
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'task-meta';
+    
+    const calendarSpan = document.createElement('span');
+    calendarSpan.className = 'calendar-badge';
+    calendarSpan.innerHTML = '📅';
+    const tooltipDiv = document.createElement('div');
+    tooltipDiv.className = 'tooltip-custom';
+    const createdStr = formatDateTip(task.createdAt);
+    tooltipDiv.innerHTML = `➕ Добавлено: ${createdStr}<br>⏳ Активно`;
+    calendarSpan.appendChild(tooltipDiv);
+    
+    const dateShortSpan = document.createElement('span');
+    dateShortSpan.style.fontSize = '0.7rem';
+    dateShortSpan.style.fontFamily = 'monospace';
+    dateShortSpan.style.color = '#b19260';
+    const shortDate = new Date(task.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+    dateShortSpan.innerText = shortDate;
+    
+    // КНОПКА УДАЛЕНИЯ ЗАДАНИЯ
+    const deleteBtn = document.createElement('button');
+    deleteBtn.innerHTML = '🗑';
+    deleteBtn.style.background = 'none';
+    deleteBtn.style.border = 'none';
+    deleteBtn.style.fontSize = '1.2rem';
+    deleteBtn.style.cursor = 'pointer';
+    deleteBtn.style.color = '#e08e6a';
+    deleteBtn.style.padding = '0 4px';
+    deleteBtn.title = 'Удалить задание';
+    deleteBtn.onclick = () => deleteMainTask(task.id);
+    
+    metaDiv.appendChild(calendarSpan);
+    metaDiv.appendChild(dateShortSpan);
+    metaDiv.appendChild(deleteBtn);
+    
+    li.appendChild(mainRow);
+    li.appendChild(metaDiv);
+    
+    attachSwipe(li, task.id);
+    container.appendChild(li);
+  });
+}
   function renderDailyBlock() {
     let cont = document.getElementById('dailyList');
     let badge = document.getElementById('dailyProgressBadge');
