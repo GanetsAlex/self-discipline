@@ -314,17 +314,14 @@
   }
 
   function deleteMainTask(taskId) {
-  if (confirm('🗑 Удалить задание без возможности восстановления?')) {
-    const index = currentData.mainTasks.findIndex(t => t.id == taskId);
-    if (index !== -1) {
-      currentData.mainTasks.splice(index, 1);
-      saveAll();
-      renderActive();
-      renderCompletedArchive();
-      showNotification('✅ Задание удалено');
-    }
+  const index = currentData.mainTasks.findIndex(t => t.id == taskId);
+  if (index !== -1) {
+    currentData.mainTasks.splice(index, 1);
+    saveAll();
+    renderActive();
+    renderCompletedArchive();
   }
-  }
+}
 
 function formatDateTip(isoString) {
   if (!isoString) return "—";
