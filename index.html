@@ -324,7 +324,14 @@
       showNotification('✅ Задание удалено');
     }
   }
+  }
 
+function formatDateTip(isoString) {
+  if (!isoString) return "—";
+  const d = new Date(isoString);
+  return d.toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+}
+  
   function addDailyTask(text) {
     if (!text.trim()) return;
     currentData.dailySubtasks.push({ id: Date.now(), text: text.trim(), done: false });
